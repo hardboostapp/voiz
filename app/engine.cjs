@@ -3,6 +3,7 @@ const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { voiceById, modelReady } = require('./voices.cjs');
 const { PROFILE, normalizeTuning } = require('./audio-profile.cjs');
+const { engineExecutable } = require('./installation.cjs');
 const BASE = 'http://127.0.0.1:18001';
 class Engine {
   constructor(root, notify = () => {}) {
@@ -41,8 +42,8 @@ class Engine {
   async start(epoch) {
     if (this.child) return;
     if (this.lifetime.signal.aborted) this.lifetime = new AbortController();
-    const exe = path.resolve(this.root, '../VCClient-Gratuito/dist/main.exe');
-    if (!fs.existsSync(exe)) throw new Error('VCClient não encontrado ao lado da pasta Voiz.');
+    const exe = engineExecutable(this.root);
+    if (!fs.existsSync(exe)) throw new Error('Motor de voz não instalado. Execute Preparar vozes.cmd na pasta do Voiz.');
     let existing;
     try { existing = await this.json('/openapi.json', {}, 1000); } catch {}
     this.assertCurrent(epoch);

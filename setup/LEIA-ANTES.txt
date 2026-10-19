@@ -1,0 +1,16 @@
+Voiz para Windows 10/11 de 64 bits
+
+O instalador inclui o aplicativo e o Electron. Soundboard e voz Natural funcionam após instalar.
+A opção de preparar vozes baixa o motor VCClient e os modelos diretamente das origens, verifica SHA-256 e converte os três modelos para ONNX. Essa etapa exige internet, espaço e alguns minutos. Nenhum microfone é aberto durante a preparação. O instalador silencioso instala apenas a base; depois execute Preparar vozes.cmd.
+
+Modelos de imitação por IA, sem vínculo oficial com as pessoas. Lula: Ivan198542. Bolsonaro: LH6582 / Ivan198542. A origem utilizada declara CC BY-NC 4.0 para ambos: uso não comercial e atribuição. Mano Brown: vitor007009, OpenRAIL declarada. Leia setup/downloads.json e as páginas de origem. Modelos não são redistribuídos no GitHub do Voiz. A prévia feminina privada e os sons do desenvolvedor não fazem parte deste instalador.
+
+No Voiz, use CABLE Input como saída. Na chamada, use CABLE Output como microfone e seus fones como saída. Baixe o VB-CABLE do site oficial https://vb-audio.com/Cable/ e instale o driver se necessário. O instalador do Voiz não instala drivers automaticamente.
+
+As novas versões ficam disponíveis em Atualizações > Buscar atualização > Baixar > Reiniciar e atualizar. Todos consultam o mesmo repositório público, sem login. Cada instalação conserva seus próprios sons, atalhos, modelos e configurações. As atualizações do aplicativo não substituem o motor, o runtime ou o driver.
+
+Fechar no X mantém o Voiz na bandeja. Para sair, use Sair do Voiz no ícone. Iniciar com o Windows é opcional; o microfone sempre começa desligado.
+
+Downloads e atualizações: https://github.com/hardboostapp/voiz/releases/latest
+Motor original e licenças: https://github.com/w-okada/voice-changer
+Electron e licenças de terceiros acompanham a pasta runtime.

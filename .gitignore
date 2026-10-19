@@ -7,9 +7,12 @@
 !/scripts/
 !/docs/
 !/.github/
+!/setup/
+/setup/downloads/
 /scripts/*
 !/scripts/build-release.cjs
 !/scripts/audit-public.cjs
+!/scripts/build-installer.cjs
 /docs/*
 !/docs/updates.md
 /tests/fixtures/

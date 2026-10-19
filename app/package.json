@@ -1,6 +1,6 @@
 {
   "name": "voiz",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "type": "module",
   "private": true,
   "description": "Soundboard e voz ao vivo, localmente no Windows",

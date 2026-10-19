@@ -1,0 +1,35 @@
+{
+  "electron": {
+    "version": "44.0.0",
+    "url": "https://github.com/electron/electron/releases/download/v44.0.0/electron-v44.0.0-win32-x64.zip",
+    "sha256": "e61aa3bcea8152bc0730abd015e47c032d778a0ef10e2a1c78ba3c4ea47942f9"
+  },
+  "engine": {
+    "url": "https://huggingface.co/wok000/vcclient000/resolve/b03c5379b9a638cf73298641a8048e379befb802/vcclient_win_std_2.0.78-beta.zip",
+    "sha256": "69c275e6ab4d2bf85ce61c0e1a61bd0f57267ca5914eeb26ac840184ee2724b8",
+    "executableSha256": "903a21774805c67be52cf9b43eb80cd8515a8183272885b33ba8882ea8705800"
+  },
+  "voices": [
+    {
+      "id": "lula", "name": "Lula", "sourceSlot": 5, "slot": 6,
+      "url": "https://huggingface.co/Ivan198542/rvcmodels/resolve/cc6f0dfb56abd4c6c9eeab4571389d04a90b836e/Lula.zip",
+      "sha256": "75282ce5fd1c7032d1d9d5162b97b10368c516245aa066a99a9c174d66e406e9",
+      "credit": "Ivan198542; CC BY-NC 4.0 declarada; uso não comercial.",
+      "source": "https://huggingface.co/Ivan198542/rvcmodels"
+    },
+    {
+      "id": "bolsonaro", "name": "Bolsonaro", "sourceSlot": 7, "slot": 8,
+      "url": "https://huggingface.co/Ivan198542/rvcmodels/resolve/cc6f0dfb56abd4c6c9eeab4571389d04a90b836e/Bolsonaro.zip",
+      "sha256": "8861bbbc97dfd40d8d20a50a811f9139d13b2bc26b5975fdf12ebcd3a1e57048",
+      "credit": "LH6582 / Ivan198542; CC BY-NC 4.0 declarada na origem utilizada; uso não comercial.",
+      "source": "https://huggingface.co/Ivan198542/rvcmodels"
+    },
+    {
+      "id": "mano-brown", "name": "Mano Brown", "sourceSlot": 9, "slot": 10,
+      "url": "https://huggingface.co/vitor007009/Mano_Brown/resolve/c4c8da7f38bd1bdfb7ef6cdf357e3670f5b28d0a/Mano%20Brown.zip",
+      "sha256": "0891223f7fc59b66b977453e9ccae38b575f838c5bf5cbb7f54dae4a843d8915",
+      "credit": "vitor007009; OpenRAIL declarada na origem.",
+      "source": "https://huggingface.co/vitor007009/Mano_Brown"
+    }
+  ]
+}

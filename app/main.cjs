@@ -9,6 +9,7 @@ const { voiceCatalog } = require('./voices.cjs');
 const { Updater, REPOSITORY } = require('./updater.cjs');
 const { createStartup } = require('./startup.cjs');
 const { createTray, closeToTray } = require('./tray.cjs');
+const { driverExecutable } = require('./installation.cjs');
 const { version } = require('./package.json');
 const root = path.resolve(__dirname, '..');
 const testRoot = process.env.VOIZ_TEST_DATA;
@@ -86,8 +87,8 @@ else {
     handle('engine-convert', (samples, voice) => engine.convert(samples, voice));
     handle('logs', () => shell.openPath(path.join(root, 'logs')));
     handle('driver', async () => {
-      const installer = path.resolve(root, '../VCClient-Gratuito/VB-CABLE/VBCABLE_Setup_x64.exe');
-      if (!fs.existsSync(installer)) throw new Error('Instalador do VB-CABLE não encontrado.');
+      const installer = driverExecutable(root);
+      if (!fs.existsSync(installer)) { await shell.openExternal('https://vb-audio.com/Cable/'); return { downloadPage: true }; }
       // The existing interactive installer requests elevation through Windows.
       const escaped = installer.replace(/'/g, "''");
       return new Promise((resolve, reject) => {

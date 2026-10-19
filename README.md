@@ -4,6 +4,14 @@ Soundboard e transformação de voz ao vivo para Windows, com interface Electron
 
 Importe sons, organize favoritos, configure atalhos e misture o soundboard com a voz natural ou os modelos RVC locais. O microfone só abre após ativação explícita.
 
+## Baixar e compartilhar
+
+Abra [a versão mais recente](https://github.com/hardboostapp/voiz/releases/latest) e baixe o arquivo **Voiz-X.Y.Z-Setup.exe**. Esse é o link para compartilhar com amigos. O instalador para Windows 10/11 de 64 bits inclui Electron; cada pessoa terá sua própria biblioteca, atalhos e configurações locais.
+
+Na instalação, a opção **Preparar Lula, Bolsonaro e Mano Brown** baixa o motor e os modelos diretamente das origens, confere SHA-256 e converte os modelos para ONNX. Exige internet e pelo menos 5 GB livres durante a preparação. Se a rede falhar, termine a instalação da base e execute **Preparar vozes.cmd** na pasta instalada. Soundboard e voz Natural funcionam sem os modelos de IA.
+
+Para enviar áudio às chamadas, instale também o driver [VB-CABLE pelo site oficial](https://vb-audio.com/Cable/). O botão do Voiz abre o instalador local quando disponível, ou a página oficial para download. O driver pode exigir autorização do Windows e reinicialização.
+
 ## Atualizações
 
 Na instalação existente, clique em **Atualizações → Buscar atualização**. Quando houver uma versão nova, baixe o pacote e clique em **Reiniciar e atualizar**. O aplicativo consulta exclusivamente as versões estáveis deste repositório, verifica SHA-256 e conserva uma cópia do aplicativo anterior.
@@ -12,7 +20,7 @@ Sons, modelos, biblioteca, configurações do motor e perfis do Electron ficam f
 
 ## Requisitos da instalação atual
 
-Windows, Electron 44 e o motor VCClient já provisionados localmente. O pacote desta versão atualiza a interface e sua integração; não é um instalador completo para um PC novo. A instalação existente usa o runtime Electron vizinho e o VCClient com configurações próprias, em loopback. O envio para chamadas usa VB-CABLE.
+O instalador independente fornece seu próprio Electron 44 e uma preparação opcional para o motor VCClient. Também é mantida a compatibilidade com a instalação anterior que reutiliza ferramentas vizinhas. O motor escuta somente em loopback e o envio para chamadas usa VB-CABLE. O arquivo **update.json** serve para atualizar uma instalação existente; use o **Setup.exe** para instalar em outro PC.
 
 No Voiz, selecione **CABLE Input** como saída. No Discord ou outro aplicativo, selecione **CABLE Output** como entrada e mantenha os fones como saída.
 
@@ -29,9 +37,12 @@ Use Node.js 22 ou superior:
 ```powershell
 node --test tests/*.test.cjs
 node scripts/build-release.cjs
+node scripts/build-installer.cjs
 ```
 
-Para publicar, aumente `app/package.json`, envie os arquivos revisados e crie uma tag `vX.Y.Z`. O GitHub Actions testa e publica `Voiz-X.Y.Z-update.json` em Releases. Também é possível executar o workflow manualmente na aba Actions. Consulte [o protocolo e os testes de atualização](docs/updates.md).
+O compilador do instalador usa NSIS em Windows; configure `VOIZ_MAKENSIS` com o executável do compilador e, opcionalmente, `VOIZ_ELECTRON_DIR` com a distribuição oficial completa do Electron 44. Sem um runtime local, o script baixa a versão fixada e confere SHA-256.
+
+Para publicar, aumente `app/package.json` e envie os arquivos revisados à branch main ou crie uma tag `vX.Y.Z`. O GitHub Actions testa e publica o **Setup.exe**, o pacote **update.json** e os checksums em Releases. Todos os usuários consultam esse mesmo canal público, sem login; a instalação da atualização depende da confirmação dentro do Voiz. Sons, modelos e ajustes de cada pessoa são preservados. Também é possível executar o workflow manualmente na aba Actions. Consulte [o protocolo e os testes de atualização](docs/updates.md).
 
 ## Modelos e atribuição
 

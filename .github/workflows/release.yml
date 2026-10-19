@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: ['main']
-    paths: ['app/**', 'scripts/build-release.cjs', '.github/workflows/release.yml']
+    paths: ['app/**', 'setup/**', 'scripts/build-release.cjs', 'scripts/build-installer.cjs', '.github/workflows/release.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -21,6 +21,19 @@ jobs:
         run: node scripts/audit-public.cjs
       - name: Montar pacote
         run: node scripts/build-release.cjs
+      - name: Preparar compilador do instalador
+        shell: pwsh
+        run: |
+          choco install nsis --version=3.11 --yes --no-progress --limit-output
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao instalar o compilador NSIS.' }
+          'VOIZ_MAKENSIS=C:\Program Files (x86)\NSIS\makensis.exe' | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Montar instalador independente
+        run: node scripts/build-installer.cjs
+      - name: Conferir instalação isolada
+        shell: pwsh
+        run: |
+          $version = (Get-Content app/package.json -Raw | ConvertFrom-Json).version
+          ./tests/installer-smoke.ps1 -Installer "release/Voiz-$version-Setup.exe" -TestRoot $env:RUNNER_TEMP
       - name: Publicar no GitHub Releases
         env:
           GH_TOKEN: ${{ github.token }}
@@ -30,5 +43,5 @@ jobs:
           $tag = "v$version"
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) { throw "A versão $tag já existe. Aumente app/package.json antes de publicar." }
-          gh release create $tag release/* --target $env:GITHUB_SHA --title "Voiz $version" --notes "Atualização do Voiz para Windows. Seus sons, modelos e configurações locais são preservados. No aplicativo, abra Atualizações e procure esta versão."
+          gh release create $tag release/* --target $env:GITHUB_SHA --title "Voiz $version" --notes "Para instalar em outro PC, baixe Voiz-$version-Setup.exe. O instalador inclui Electron e prepara as vozes a partir das origens. Para quem já usa, abra Atualizações no Voiz: o pacote de atualização preserva sons, modelos e configurações. O VB-CABLE é instalado separadamente pelo site oficial."
           if ($LASTEXITCODE -ne 0) { throw 'Não foi possível publicar a versão.' }
