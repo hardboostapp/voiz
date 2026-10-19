@@ -20,6 +20,17 @@ foreach ($voizDirectory in @('data','engine')) {
   New-Item -ItemType Directory -Path (Join-Path $voizTarget $voizDirectory) -Force | Out-Null
   Set-Content -LiteralPath (Join-Path $voizTarget "$voizDirectory\keep.txt") -Value 'preserve'
 }
+# Seed completed-model placeholders to exercise the real PowerShell wrapper without downloads or inference.
+Set-Content -LiteralPath (Join-Path $voizTarget 'engine\main.exe') -Value 'must not execute: all models are already prepared'
+foreach ($voizSlot in @(6,8,10)) {
+  $voizModel=Join-Path $voizTarget "engine\model_dir\$voizSlot"
+  New-Item -ItemType Directory -Path $voizModel -Force | Out-Null
+  Set-Content -LiteralPath (Join-Path $voizModel 'params.json') -Value '{"is_onnx":true,"model_file":"fixture.onnx"}'
+  Set-Content -LiteralPath (Join-Path $voizModel 'fixture.onnx') -Value 'placeholder: no inference'
+}
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $voizTarget 'setup\Install-AI.ps1') -Root ($voizTarget+'\.')
+if ($LASTEXITCODE -ne 0) { throw 'Voice preparation wrapper failed.' }
+if (-not (Select-String -LiteralPath (Join-Path $voizTarget 'logs\setup-ai.log') -Pattern 'Vozes preparadas' -Quiet)) { throw 'Voice preparation returned before its worker completed.' }
 $voizUninstall=Start-Process -FilePath (Join-Path $voizTarget 'Desinstalar Voiz.exe') -ArgumentList "/S _?=$voizTarget" -WindowStyle Hidden -PassThru -Wait
 if ($voizUninstall.ExitCode -ne 0 -or (Test-Path -LiteralPath (Join-Path $voizTarget 'app'))) { throw 'Uninstall failed.' }
 foreach ($voizDirectory in @('data','engine')) {
