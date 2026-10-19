@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'"><title>Voiz</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h6m4 0h6M4 17h10m4 0h2"/><circle cx="12" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></symbol>
+<symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 10v4M7 6v12M12 3v18M17 7v10M21 10v4"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></symbol>
+</defs></svg>
+<header class="app-header">
+  <div class="brand"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M4 12v12M11 6v24M18 10v16M25 4v28M32 12v12"/></svg><span>voiz<span class="brand-dot">.</span></span></div>
+  <div class="header-caption">Seus sons. Sua outra voz.</div>
+  <button id="stop-all" class="stop-all"><svg><use href="#i-stop"/></svg>Parar tudo <kbd>Ctrl Shift Space</kbd></button>
+</header>
+<div id="notice" class="notice" role="status" hidden><span id="notice-text"></span><button id="dismiss-notice" aria-label="Fechar aviso">Fechar</button></div>
+<main class="workspace">
+  <section class="library-panel" aria-labelledby="library-title">
+    <div class="section-heading"><div><h1 id="library-title">Soundboard</h1><p id="sound-count">Sua coleção de sons para a call.</p></div><button id="import" class="primary"><svg><use href="#i-plus"/></svg>Adicionar sons</button></div>
+    <div class="library-toolbar"><label class="search"><svg><use href="#i-search"/></svg><input id="search" placeholder="Buscar um som…" aria-label="Buscar um som" type="search"></label><label class="sr-only" for="category">Categoria</label><select id="category"><option value="">Todas as categorias</option></select></div>
+    <div class="sound-monitor">
+      <label class="monitor-toggle"><input id="monitor-enabled" type="checkbox" checked>Ouvir meus sons</label>
+      <label class="monitor-device-label" for="monitor-device">Ouvir em</label><select id="monitor-device" aria-describedby="monitor-status"><option value="">Escolha seu fone</option></select>
+      <p id="monitor-status" role="status" aria-live="polite">Sons por clique ou atalho também tocam no seu fone.</p>
+    </div>
+    <div class="library-tabs"><button id="all-tab" class="tab selected" aria-pressed="true">Todos os sons</button><button id="favorites-tab" class="tab" aria-pressed="false"><svg><use href="#i-star"/></svg>Favoritos</button><span id="playing-count"></span></div>
+    <div id="sound-grid" class="sound-grid"></div>
+    <div id="empty" class="empty"><div class="empty-wave"><svg><use href="#i-wave"/></svg></div><h2>O próximo som da call<br>começa aqui.</h2><p>Adicione seus memes, efeitos e músicas.<br>Um clique para tocar. Um atalho para surpreender.</p><button id="import-empty" class="primary"><svg><use href="#i-plus"/></svg>Escolher arquivos</button><small>MP3, WAV, OGG, FLAC e outros · até 100 MB por arquivo</small></div>
+    <div id="no-results" class="no-results" hidden>Nenhum som encontrado. Tente outro nome ou categoria.</div>
+    <form id="sound-editor" class="sound-editor" hidden>
+      <div class="editor-heading"><h2>Editar som</h2><button id="close-editor" type="button" class="quiet">Fechar</button></div>
+      <div class="editor-fields"><label>Nome<input id="edit-name" maxlength="80" required></label><label>Categoria<input id="edit-category" maxlength="30" list="categories"></label><datalist id="categories"></datalist><label>Atalho<input id="edit-shortcut" placeholder="Clique e pressione as teclas" readonly></label><button id="clear-shortcut" type="button" class="quiet">Limpar atalho</button></div>
+      <div class="editor-actions"><label class="compact-volume">Volume do som<input id="edit-volume" type="range" min="0" max="100" value="100"></label><button id="delete-sound" type="button" class="danger quiet">Remover som</button><button type="submit" class="primary">Salvar</button></div><p id="editor-error" class="inline-error" role="alert"></p>
+    </form>
+    <div class="library-bottom"><svg><use href="#i-wave"/></svg><span id="library-tip">Clique em um som para tocar; clique de novo para parar.</span><button id="stop-sounds" class="quiet">Parar sons</button></div>
+  </section>
+  <aside class="mixer-panel" aria-label="Voz e saída de áudio">
+    <div class="mixer-heading"><h2>Sua voz</h2><span id="mic-badge" class="badge">Microfone desligado</span></div>
+    <div id="voice-options" class="voice-options" role="group" aria-label="Escolher voz"></div>
+    <div id="model-info" class="model-info" hidden><span class="local-dot"></span><span id="model-info-text"></span></div>
+    <label class="field-label" for="input-device">Microfone de entrada</label><select id="input-device"><option value="">Carregando dispositivos…</option></select>
+    <div class="divider"></div>
+    <div class="mixer-heading"><h2>Saída</h2><button id="refresh-devices" class="icon-button" title="Atualizar dispositivos" aria-label="Atualizar dispositivos"><svg><use href="#i-refresh"/></svg></button></div>
+    <label class="field-label" for="output-device">Voz + sons vão para</label><select id="output-device"><option value="">Escolha a saída</option></select>
+    <div id="cable-help" class="cable-help"><strong>Cabo virtual não encontrado</strong><p>Para enviar o Voiz à call, instale o VB-CABLE e atualize os dispositivos.</p><button id="install-driver" class="text-button">Abrir instalador do VB-CABLE</button></div>
+    <p id="routing-help" class="routing-help">Você pode escolher seus fones para testar os sons.</p>
+    <button id="mic-toggle" class="mic-toggle"><svg><use href="#i-mic"/></svg><span>Ativar microfone</span></button>
+    <p id="voice-status" class="voice-status" aria-live="polite">Seu microfone só abre quando você ativar.</p>
+    <label class="monitor-toggle voice-monitor-toggle"><input id="voice-monitor-enabled" type="checkbox" aria-describedby="voice-monitor-status">Ouvir minha voz</label>
+    <p id="voice-monitor-status" class="voice-status">Escute a voz escolhida no mesmo fone de “Ouvir em”.</p>
+    <details id="voice-adjustments" class="audio-help" hidden><summary id="tuning-title">Ajustar esta voz</summary>
+      <p>Salvo por voz. Mude um ajuste por vez e ative o microfone para ouvir.</p>
+      <div class="tuning-field"><label for="voice-pitch">Tom</label><output id="voice-pitch-value">0</output><input id="voice-pitch" type="range" min="-12" max="12" step="1" value="0"></div>
+      <p>Menos: mais grave. Mais: mais agudo.</p>
+      <div class="tuning-field"><label for="voice-similarity">Semelhança</label><output id="voice-similarity-value">65%</output><input id="voice-similarity" type="range" min="30" max="85" step="5" value="65"></div>
+      <p>Aumente para reforçar o timbre. Reduza se perder clareza.</p>
+      <div class="tuning-field"><label for="voice-input-gain">Ganho de entrada</label><output id="voice-input-gain-value">100%</output><input id="voice-input-gain" type="range" min="50" max="400" step="10" value="100"></div>
+      <p id="input-level">O nível aparece ao ativar o microfone.</p><button id="reset-voice-tuning" class="text-button">Restaurar ajustes desta voz</button>
+    </details>
+    <details class="audio-help" id="call-help"><summary>Usar no Discord ou em outra call</summary>
+      <ol><li>No Voiz, escolha <strong>CABLE Input</strong> na saída.</li><li>No Discord, abra <strong>Configurações → Voz e vídeo</strong> e escolha <strong>CABLE Output</strong> como entrada.</li><li>Mantenha seus <strong>fones</strong> como saída do Discord.</li><li>Ative o microfone no Voiz e use o teste de microfone do Discord.</li></ol>
+      <p>Se o Discord cortar a voz ou os sons, teste desativar a supressão de ruído/Krisp e o controle automático de ganho. Ajuste a sensibilidade para captar a fala inteira.</p>
+    </details>
+    <details class="audio-help" id="updates-section"><summary>Atualizações do Voiz</summary>
+      <p id="update-version">Versão instalada: 0.4.2</p>
+      <p id="update-status" role="status" aria-live="polite">Busque novas versões no GitHub.</p>
+      <div class="update-actions"><button id="update-check" class="text-button">Buscar atualização</button><button id="update-download" class="text-button" hidden>Baixar atualização</button><button id="update-install" class="primary" hidden>Reiniciar e atualizar</button></div>
+      <p>A instalação reinicia o Voiz. Seus sons, modelos e ajustes são preservados.</p>
+      <button id="update-repository" class="text-button">Ver versões no GitHub</button>
+    </details>
+    <details class="audio-help" id="app-behavior"><summary>Windows e bandeja</summary>
+      <label class="monitor-toggle"><input id="start-with-windows" type="checkbox">Iniciar com o Windows</label>
+      <p id="startup-status" role="status" aria-live="polite">Carregando a preferência do Windows…</p>
+      <p>O X recolhe o Voiz para a bandeja e mantém o áudio ativo. Para encerrar, clique com o botão direito no ícone e escolha “Sair do Voiz”.</p>
+    </details>
+    <div class="divider"></div>
+    <div class="mixer-heading"><h2>Mistura</h2><span id="latency" class="measurement">Local</span></div>
+    <div class="volume-field"><label for="mic-volume">Voz</label><output id="mic-volume-value">100%</output><input id="mic-volume" type="range" min="0" max="100" value="100"></div>
+    <div class="volume-field"><label for="sound-volume">Sons</label><output id="sound-volume-value">80%</output><input id="sound-volume" type="range" min="0" max="100" value="80"></div>
+    <div class="volume-field master-volume"><label for="master-volume">Volume geral</label><output id="master-volume-value">80%</output><input id="master-volume" type="range" min="0" max="100" value="80"></div>
+    <div class="output-meter" role="meter" aria-label="Nível de saída" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="meter-fill"></div></div>
+    <div class="output-caption"><span id="output-status">Aguardando saída</span><span>48 kHz</span></div>
+  </aside>
+</main>
+<footer><span class="footer-local"><span class="local-dot"></span>Feito para rodar no seu PC</span><details><summary>Sobre as vozes</summary><p>Imitações por IA, sem vínculo oficial. Lula: Ivan198542, CC BY-NC 4.0 declarada. Bolsonaro: LH6582 / Ivan198542. Mano Brown: vitor007009. Fontes e licenças declaradas em LEIA-ME.md e models/sources.json.</p></details><button id="open-logs" class="quiet">Abrir logs</button><button id="open-updates" class="quiet">Voiz 0.4 · Atualizações</button></footer>
+<script type="module" src="renderer.js"></script>
+</body></html>

@@ -1,0 +1,18 @@
+# Everything stays local unless explicitly included below.
+/*
+!/.gitignore
+!/README.md
+!/app/
+!/tests/
+!/scripts/
+!/docs/
+!/.github/
+/scripts/*
+!/scripts/build-release.cjs
+!/scripts/audit-public.cjs
+/docs/*
+!/docs/updates.md
+/tests/fixtures/
+node_modules/
+*.log
+*.env

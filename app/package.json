@@ -1,0 +1,9 @@
+{
+  "name": "voiz",
+  "version": "0.4.2",
+  "type": "module",
+  "private": true,
+  "description": "Soundboard e voz ao vivo, localmente no Windows",
+  "main": "main.cjs",
+  "scripts": { "test": "node --test ../tests/*.test.cjs" }
+}
