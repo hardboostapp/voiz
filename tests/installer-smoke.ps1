@@ -11,7 +11,7 @@ foreach ($voizFile in @('setup\no-integration','app\main.cjs','runtime\electron.
 $voizNodeMode=$env:ELECTRON_RUN_AS_NODE
 try {
   $env:ELECTRON_RUN_AS_NODE='1'
-  & (Join-Path $voizTarget 'runtime\electron.exe') -e "if (process.versions.electron !== '44.0.0') process.exit(1);"
+  & (Join-Path $voizTarget 'runtime\electron.exe') -e "if (process.versions.electron !== '44.0.0') process.exit(1);" | Out-Null
   if ($LASTEXITCODE -ne 0) { throw 'Standalone runtime failed.' }
 } finally {
   if ($null -eq $voizNodeMode) { Remove-Item Env:ELECTRON_RUN_AS_NODE -ErrorAction SilentlyContinue } else { $env:ELECTRON_RUN_AS_NODE=$voizNodeMode }
