@@ -30,7 +30,7 @@ Em **Windows e bandeja**, marque **Iniciar com o Windows** para abrir o Voiz na 
 
 A reprodução da voz de IA começa com reserva de 100 ms e aumenta até 200 ms se faltar áudio convertido. Isso reduz a espera inicial em 100 ms em relação à versão 0.4.1; a latência total também inclui captura, conversão, dispositivos e aplicativo da chamada.
 
-Escolher uma voz já inicia sua preparação em segundo plano, mantendo o microfone desligado. Ao ativar a mesma voz, o aplicativo reaproveita essa preparação. O motor usa uma única cópia persistente de suas bibliotecas, de aproximadamente 959 MiB, e seu cliente auxiliar permanece sem janela. Os padrões de influência do modelo e proteção de consoantes foram ajustados para reduzir trocas de palavras e artefatos. A conversão ainda pode alterar pronúncia e timbre; a voz Feminina atual deriva de um modelo em inglês e não equivale à prévia privada feita com referência de voz.
+Escolher uma voz já inicia sua preparação em segundo plano, mantendo o microfone desligado. Ao ativar a mesma voz, o aplicativo reaproveita essa preparação. O motor usa uma única cópia persistente de suas bibliotecas, de aproximadamente 959 MiB, e seu cliente auxiliar permanece sem janela. Os padrões de influência do modelo e proteção de consoantes foram ajustados para reduzir trocas de palavras e artefatos. A conversão ainda pode alterar pronúncia e timbre. A opção **Feminina** usa o modelo comunitário **Nilce Moretto**, com ajuste de tom em **Ajustar voz**; a equivalência exata com demonstrações de outros serviços não foi confirmada.
 
 ## Desenvolvimento e publicação
 
@@ -53,6 +53,6 @@ As opções usam modelos de imitação por IA, sem vínculo oficial com as pesso
 - Lula: [Ivan198542/rvcmodels](https://huggingface.co/Ivan198542/rvcmodels), [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/), uso não comercial.
 - Bolsonaro: LH6582 / [Ivan198542/rvcmodels](https://huggingface.co/Ivan198542/rvcmodels), CC BY-NC 4.0 declarada na origem utilizada, uso não comercial.
 - Mano Brown: [vitor007009/Mano_Brown](https://huggingface.co/vitor007009/Mano_Brown), OpenRAIL declarada na origem.
-- Feminina: [Wismut/RVC_US_Female_1](https://huggingface.co/Wismut/RVC_US_Female_1), Apache-2.0 declarada na origem. O modelo original é em inglês. A naturalidade depende da entrada e exige avaliação de escuta; esta versão não incorpora referências privadas.
+- Feminina / Nilce Moretto: [BunnyToon/nilce, revisão fixada](https://huggingface.co/BunnyToon/nilce/tree/f8d89fa370c8ba2edb2f399244a4f1234342c12e), OpenRAIL declarada na origem. Substitui o modelo genérico em inglês desde a versão 0.4.5. A naturalidade depende da entrada; esta versão não incorpora referências privadas.
 
 Motor: [w-okada/voice-changer](https://github.com/w-okada/voice-changer), licença incluída em `engine/licenses`. Electron e Chromium acompanham suas licenças. O driver VB-CABLE conserva os arquivos originais e o aviso da VB-Audio.

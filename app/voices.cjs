@@ -5,7 +5,7 @@ const VOICES = Object.freeze([
   { id: 'lula', name: 'Lula', kind: 'rvc', slot: 6, caption: 'Modelo de IA', attribution: 'Ivan198542 · CC BY-NC 4.0 (declarada na origem)' },
   { id: 'bolsonaro', name: 'Bolsonaro', kind: 'rvc', slot: 8, caption: 'Modelo de IA', attribution: 'LH6582 / Ivan198542 · CC BY-NC 4.0 declarada na origem usada' },
   { id: 'mano-brown', name: 'Mano Brown', kind: 'rvc', slot: 10, caption: 'Modelo de IA', attribution: 'vitor007009 · OpenRAIL (declarada no repositório)' },
-  { id: 'feminina', name: 'Feminina', kind: 'rvc', slot: 12, caption: 'Modelo de fala', defaultTuning: { pitchShift: 8, indexRatio: .15, inputGain: 1 }, attribution: 'Wismut / RVC_US_Female_1 · Apache-2.0 declarada no repositório; modelo original em inglês' }
+  { id: 'feminina', name: 'Feminina', kind: 'rvc', slot: 12, caption: 'Nilce Moretto', defaultTuning: { pitchShift: 8, indexRatio: .15, inputGain: 1 }, attribution: 'BunnyToon / Nilce Moretto · OpenRAIL declarada no repositório' }
 ]);
 function voiceById(id) {
   const voice = VOICES.find(v => v.id === id);

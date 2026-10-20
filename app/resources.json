@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": 1,
+  "revision": 2,
   "packages": [
     {
       "id": "virtual-cable",
@@ -560,32 +560,32 @@
     },
     {
       "id": "voice-feminina",
-      "name": "Feminina",
-      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/voice-feminina.zip",
-      "bytes": 207027137,
-      "sha256": "91ed3c85554e59ea974d2f4dfa29f6aa6b930c34a227d0b1085482cd7d49228e",
+      "name": "Feminina — Nilce Moretto",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r2/voice-feminina.zip",
+      "bytes": 171206469,
+      "sha256": "5f1b9e18406b43ac77a8b463536f747f65a1ab0c6de2f25dbbfbe88ee1376de9",
       "files": [
         {
-          "path": "engine/model_dir/12/Female_1.index",
-          "bytes": 194012419,
-          "sha256": "b15d67755aaf7d62c5d26b6fc10df7ddb2f625b17d15248a42f0ede78b47d105"
-        },
-        {
-          "path": "engine/model_dir/12/Female_1.onnx",
-          "bytes": 115127097,
-          "sha256": "b1ee8ab569302fa401316a77e93bacd34e1eddf97f5c8e2b1dda7f89d19d85ca"
-        },
-        {
           "path": "engine/model_dir/12/FONTE.txt",
-          "bytes": 260,
-          "sha256": "24a388ad4d2f23b19c69ee00111bab01026131eda843a5ba932b3ca6c26daf41",
-          "inline": "Wismut · Apache-2.0 declarada · https://huggingface.co/Wismut/RVC_US_Female_1\nConversão local do PTH para ONNX pelo VCClient. Modelo de imitação por IA, sem vínculo oficial.\nLicenças e fontes: https://github.com/hardboostapp/voiz#modelos-e-atribuição\n"
+          "bytes": 399,
+          "sha256": "201639a365a61a3295efbd9d9d468c7916c89fcbe5f6dc86d7ff41d0e5521a65",
+          "inline": "Nilce Moretto — modelo de imitação por IA, sem vínculo oficial.\nOrigem: https://huggingface.co/BunnyToon/nilce/tree/f8d89fa370c8ba2edb2f399244a4f1234342c12e\nAutor: BunnyToon. OpenRAIL declarada no README da origem.\nConvertido de PTH para ONNX pelo VCClient.\nReferência escolhida: https://www.vocalize.fm/pt/voices/16919\nA equivalência exata dos pesos da amostra Vocalize não foi confirmada.\n"
+        },
+        {
+          "path": "engine/model_dir/12/added_IVF1140_Flat_nprobe_1_nilce_v2.index",
+          "bytes": 140522059,
+          "sha256": "4085a5e8b322368372049be9d4b1983dddaa96210d730c3fce1f9d97faabdfa8"
+        },
+        {
+          "path": "engine/model_dir/12/nilce.onnx",
+          "bytes": 110408505,
+          "sha256": "3481635dd39064116855682294fbb02ec2c86301ee14e69f7b4c80db295d9071"
         },
         {
           "path": "engine/model_dir/12/params.json",
-          "bytes": 557,
-          "sha256": "e489a3b910a2b0c22b5784dc071456f97f5d81773e93d386fe4f6b57ff0ae70d",
-          "inline": "{\n  \"slot_index\": 12,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Feminina\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"Female_1.onnx\",\n  \"index_file\": \"Female_1.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 48000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 8,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
+          "bytes": 600,
+          "sha256": "33131c141ea605b18b2d5aad4baadf01bab10268b896f77fa9749bc0d085aa51",
+          "inline": "{\n  \"slot_index\": 12,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Feminina — Nilce Moretto\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"nilce.onnx\",\n  \"index_file\": \"added_IVF1140_Flat_nprobe_1_nilce_v2.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 40000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 8,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
         }
       ]
     }

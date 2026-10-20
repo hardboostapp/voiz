@@ -1,7 +1,7 @@
 // Builds only the fixed public runtime/model allowlist; no library, sounds, or voice references.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{execFileSync}=require('node:child_process');
 const {engineExecutable}=require('../app/installation.cjs'),{voiceById}=require('../app/voices.cjs'),{sha256,validateManifest}=require('../app/resources.cjs');
-const root=path.resolve(__dirname,'..'),source=process.env.VOIZ_RESOURCE_SOURCE||root,tag=process.env.VOIZ_RESOURCE_TAG||'resources-2026-10-20-r1';
+const root=path.resolve(__dirname,'..'),source=process.env.VOIZ_RESOURCE_SOURCE||root,tag=process.env.VOIZ_RESOURCE_TAG||'resources-2026-10-20-r2';
 const output=path.join(root,'release/resource-packs'),staging=path.join(root,'.resource-build');
 function copyTree(from,to,items){for(const entry of fs.readdirSync(from,{withFileTypes:true})){const file=path.join(from,entry.name),destination=path.join(to,entry.name);if(entry.isSymbolicLink())throw Error('Resource source contains links');if(entry.isDirectory())copyTree(file,destination,items);else{fs.mkdirSync(path.dirname(destination),{recursive:true});fs.copyFileSync(file,destination);items.push(destination);}}}
 (async()=>{
@@ -28,7 +28,7 @@ function copyTree(from,to,items){for(const entry of fs.readdirSync(from,{withFil
     const licenseFile=path.join(folder,'engine/licenses/VCClient-LICENSE.txt');fs.mkdirSync(path.dirname(licenseFile),{recursive:true});fs.writeFileSync(licenseFile,license);files.push(licenseFile);
   });
   await pack('modules','Bibliotecas de conversão',async(folder,files)=>copyTree(path.join(source,'engine/modules'),path.join(folder,'engine/modules'),files));
-  const origins={lula:'Ivan198542 · CC BY-NC 4.0 · https://huggingface.co/Ivan198542/rvcmodels',bolsonaro:'LH6582 / Ivan198542 · CC BY-NC 4.0 na origem usada · https://huggingface.co/Ivan198542/rvcmodels','mano-brown':'vitor007009 · OpenRAIL declarada · https://huggingface.co/vitor007009/Mano_Brown',feminina:'Wismut · Apache-2.0 declarada · https://huggingface.co/Wismut/RVC_US_Female_1'};
+  const origins={lula:'Ivan198542 · CC BY-NC 4.0 · https://huggingface.co/Ivan198542/rvcmodels',bolsonaro:'LH6582 / Ivan198542 · CC BY-NC 4.0 na origem usada · https://huggingface.co/Ivan198542/rvcmodels','mano-brown':'vitor007009 · OpenRAIL declarada · https://huggingface.co/vitor007009/Mano_Brown',feminina:'BunnyToon / Nilce Moretto · OpenRAIL declarada · https://huggingface.co/BunnyToon/nilce/tree/f8d89fa370c8ba2edb2f399244a4f1234342c12e'};
   for(const id of ['lula','bolsonaro','mano-brown','feminina'])await pack('voice-'+id,voiceById(id).name,async(folder,files)=>{
     const voice=voiceById(id),slot=path.join(source,'engine/model_dir',String(voice.slot)),original=JSON.parse(fs.readFileSync(path.join(slot,'params.json'),'utf8'));
     const params={slot_index:voice.slot,voice_changer_type:'RVC',name:voice.name,description:'',credit:'',terms_of_use_url:'',icon_file:null,speakers:{},model_file:original.model_file,index_file:original.index_file,is_onnx:true,inferencer_type:original.inferencer_type,sample_rate:original.sample_rate,is_f0:original.is_f0,deprecated:false,embedder:original.embedder,pitch_estimator:'rmvpe_onnx',sample_id:null,version:original.version};
