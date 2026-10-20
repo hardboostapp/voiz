@@ -5,6 +5,7 @@ const { fileURLToPath } = require('node:url');
 const { spawn } = require('node:child_process');
 const { Library } = require('./library.cjs');
 const { Engine } = require('./engine.cjs');
+const { Resources } = require('./resources.cjs');
 const { voiceCatalog } = require('./voices.cjs');
 const { Updater, REPOSITORY } = require('./updater.cjs');
 const { createStartup } = require('./startup.cjs');
@@ -16,7 +17,7 @@ const testRoot = process.env.VOIZ_TEST_DATA;
 app.setPath('userData', path.join(testRoot || root, 'electron-profile'));
 app.setName('Voiz');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-let window, library, engine, updater, tray, startup, installingUpdate = false, micArmedUntil = 0, registrations = [], quitting = false, exitRequested = false;
+let window, library, engine, resources, updater, tray, startup, installingUpdate = false, micArmedUntil = 0, registrations = [], quitting = false, exitRequested = false;
 const startInTray = process.argv.includes('--voiz-background');
 const pageFile = fs.realpathSync.native(path.join(__dirname, 'index.html'));
 function isAppPage(value) {
@@ -50,6 +51,8 @@ else {
   app.whenReady().then(() => {
     library = new Library(testRoot || path.join(root, 'data'));
     engine = new Engine(root, value => send('engine-status', value));
+    resources = new Resources(testRoot || root, value => send('resources-status', value));
+    const ensureResources = () => testRoot ? Promise.resolve() : resources.status.state === 'ready' ? Promise.resolve() : resources.sync();
     updater = new Updater(testRoot || root, version, value => send('update-status', value));
     startup = createStartup(app, process.execPath, __dirname, !!testRoot);
     session.defaultSession.setPermissionCheckHandler((wc, permission) => wc === window?.webContents && ['media', 'speaker-selection'].includes(permission));
@@ -59,6 +62,8 @@ else {
       callback(local && ((permission === 'media' && audioOnly && Date.now() < micArmedUntil) || permission === 'speaker-selection'));
     });
     handle('state', () => ({ ...library.snapshot(), shortcuts: registrations, voices: voiceCatalog(root) }));
+    handle('resources-state', () => resources.snapshot());
+    handle('resources-sync', async () => { micArmedUntil = 0; send('shortcut', 'stop'); await engine.stop(); await ensureResources(); return resources.snapshot(); });
     handle('import', async () => {
       const selection = await dialog.showOpenDialog(window, { title: 'Adicionar sons ao Voiz', properties: ['openFile', 'multiSelections'], filters: [{ name: 'Áudio', extensions: ['wav', 'mp3', 'ogg', 'm4a', 'aac', 'flac', 'opus', 'webm'] }] });
       const result = library.import(selection.canceled ? [] : selection.filePaths); registerShortcuts();
@@ -83,17 +88,22 @@ else {
     });
     handle('mic-arm', () => { micArmedUntil = Date.now() + 15000; return true; });
     handle('mic-disarm', () => { micArmedUntil = 0; });
-    handle('engine-prepare', (voice, tuning) => engine.prepare(voice, tuning));
+    handle('engine-prepare', async (voice, tuning) => { await ensureResources(); return engine.prepare(voice, tuning); });
+    handle('engine-warm', async (voice, tuning) => { if (testRoot && !process.env.VOIZ_TEST_WARM) return { skipped: true }; await ensureResources(); return engine.warm(voice, tuning); });
     handle('engine-convert', (samples, voice) => engine.convert(samples, voice));
     handle('logs', () => shell.openPath(path.join(root, 'logs')));
+    handle('cable-site', () => shell.openExternal('https://vb-audio.com/Cable/'));
     handle('driver', async () => {
       const installer = driverExecutable(root);
       if (!fs.existsSync(installer)) { await shell.openExternal('https://vb-audio.com/Cable/'); return { downloadPage: true }; }
-      // The existing interactive installer requests elevation through Windows.
-      const escaped = installer.replace(/'/g, "''");
+      fs.rmSync(path.join(root,'data/cable-install-result.json'),{force:true});
       return new Promise((resolve, reject) => {
-        const child = spawn('powershell.exe', ['-NoProfile', '-Command', `Start-Process -FilePath '${escaped}' -Verb RunAs`], { windowsHide: true, stdio: 'ignore' });
-        child.once('error', reject); child.once('exit', code => code === 0 ? resolve(true) : reject(new Error('Instalação não aberta. Autorize a janela do Windows para continuar.')));
+        const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(__dirname,'install-cable.ps1'), '-Root', root, '-DriverDirectory', path.dirname(installer)], { windowsHide: true, stdio: 'ignore' });
+        child.once('error', reject); child.once('exit', code => {
+          let result; try { result = JSON.parse(fs.readFileSync(path.join(root,'data/cable-install-result.json'),'utf8').replace(/^\uFEFF/,'')); } catch {}
+          if ([0,3010,1641].includes(code)) resolve(result || {message:'Reinicie o PC para concluir a instalação do cabo virtual.'});
+          else reject(new Error(result?.message || 'Não foi possível instalar o cabo. Autorize a confirmação do Windows e tente novamente.'));
+        });
       });
     });
     registerShortcuts();
@@ -106,6 +116,7 @@ else {
     window.on('query-session-end', () => { exitRequested = true; micArmedUntil = 0; send('shortcut', 'stop'); void engine.stop(); });
     window.once('ready-to-show', () => { if (!process.env.VOIZ_TEST_HIDE && (!startInTray || !tray)) window.show(); });
     window.loadFile(pageFile);
+    if (!testRoot) void ensureResources().catch(() => {});
   });
   app.on('window-all-closed', () => app.quit());
   app.on('before-quit', event => {

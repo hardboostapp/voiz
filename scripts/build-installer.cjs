@@ -12,9 +12,20 @@ async function build(){
     }
   }
   if(!fs.existsSync(path.join(runtime,'LICENSE'))||!fs.existsSync(path.join(runtime,'LICENSES.chromium.html')))throw Error('Electron license files missing');
+  const cable=require('../app/resources.json').packages.find(p=>p.id==='virtual-cable');
+  if(!cable)throw Error('Build the reviewed resource manifest before packaging');
+  const tools=path.join(root,'.tools');fs.mkdirSync(tools,{recursive:true});
+  const cableArchive=path.join(tools,'virtual-cable.zip'),localCableArchive=path.join(root,'release/resource-packs/virtual-cable.zip');
+  if(fs.existsSync(localCableArchive)&&crypto.createHash('sha256').update(fs.readFileSync(localCableArchive)).digest('hex')===cable.sha256)fs.copyFileSync(localCableArchive,cableArchive);
+  if(!fs.existsSync(cableArchive)||crypto.createHash('sha256').update(fs.readFileSync(cableArchive)).digest('hex')!==cable.sha256){
+    const response=await fetch(cable.url,{signal:AbortSignal.timeout(120000)});if(!response.ok)throw Error('VB-CABLE download failed');const bytes=Buffer.from(await response.arrayBuffer());
+    if(crypto.createHash('sha256').update(bytes).digest('hex')!==cable.sha256)throw Error('VB-CABLE checksum failed');fs.writeFileSync(cableArchive,bytes);
+  }
+  const cableStage=fs.mkdtempSync(path.join(tools,'cable-')),cableManifest=path.join(cableStage,'package.json');fs.writeFileSync(cableManifest,JSON.stringify(cable));
+  execFileSync('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',path.join(root,'app/extract-resources.ps1'),'-Archive',cableArchive,'-Destination',cableStage,'-Manifest',cableManifest],{windowsHide:true});
   const compiler=process.env.VOIZ_MAKENSIS||path.resolve(root,'../_motores/cache-builder/nsis-3.0.4.1/nsis-3.0.4.1-1mx3n/makensis.exe');
   const output=path.join(root,'release',`Voiz-${pkg.version}-Setup.exe`);fs.mkdirSync(path.dirname(output),{recursive:true});
-  execFileSync(compiler,['/V2',`/DSOURCE=${root}`,`/DRUNTIME=${path.resolve(runtime)}`,`/DVERSION=${pkg.version}`,`/DOUTPUT=${output}`,path.join(root,'setup/Voiz.nsi')],{windowsHide:true,stdio:'inherit'});
+  execFileSync(compiler,['/V2',`/DSOURCE=${root}`,`/DRUNTIME=${path.resolve(runtime)}`,`/DCABLE=${path.join(cableStage,'drivers')}`,`/DVERSION=${pkg.version}`,`/DOUTPUT=${output}`,path.join(root,'setup/Voiz.nsi')],{windowsHide:true,stdio:'inherit'});
   const sha256=crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex');fs.appendFileSync(path.join(root,'release/SHA256SUMS.txt'),sha256+'  '+path.basename(output)+'\n');
   console.log(JSON.stringify({version:pkg.version,installer:output,bytes:fs.statSync(output).size,sha256}));
 }

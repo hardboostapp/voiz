@@ -2,6 +2,8 @@ import { AudioMixer } from './audio.js';
 const $ = id => document.getElementById(id);
 const api = window.voiz;
 let state, voices = [], devices = [], favoriteOnly = false, selected = null, playing = [], busy = false, meterTimer;
+let warmingVoice = '', preparedVoice = '', warmGeneration = 0;
+let resourcesStatus = { state: 'idle' };
 const mixer = new AudioMixer(api, onAudio);
 function icon(name) { const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const use = document.createElementNS(svg.namespaceURI, 'use'); use.setAttribute('href', `#i-${name}`); svg.append(use); return svg; }
 function notice(text) { $('notice-text').textContent = text.replace(/^Error invoking remote method '[^']+': (?:Error: )?/, ''); $('notice').hidden = false; }
@@ -9,7 +11,7 @@ function fail(error) { notice(error.message || String(error)); }
 function run(fn) { return (...args) => Promise.resolve().then(() => fn(...args)).catch(fail); }
 function outputId() { return $('output-device').value; }
 function currentVoice() { return voices.find(v => v.id === state.voice); }
-function currentTuning() { return state.voiceTuning?.[state.voice] || { pitchShift: 0, indexRatio: .65, inputGain: 1 }; }
+function currentTuning() { return state.voiceTuning?.[state.voice] || { pitchShift: 0, indexRatio: .15, inputGain: 1 }; }
 function renderTuning() {
   const tuning = currentTuning(); $('voice-adjustments').hidden = state.voice === 'normal'; $('tuning-title').textContent = `Ajustar ${currentVoice().name}`;
   $('voice-pitch').value = tuning.pitchShift; $('voice-similarity').value = tuning.indexRatio * 100; $('voice-input-gain').value = tuning.inputGain * 100;
@@ -18,6 +20,27 @@ function renderTuning() {
 async function saveTuning(tuning) {
   if (mixer.active || mixer.starting) { mixer.stopMic(); notice('Ajuste salvo. Ative o microfone para ouvir a mudança.'); }
   const voice = state.voice; const saved = await api.settings({ voiceTuning: { [voice]: tuning } }); state.voiceTuning = saved.voiceTuning; renderTuning();
+  void warmSelectedVoice();
+}
+function idleVoiceStatus() {
+  if (warmingVoice === state.voice) return `Preparando ${currentVoice().name} em segundo plano. O microfone continua desligado.`;
+  return preparedVoice === state.voice ? `${currentVoice().name} pronta. Ative o microfone quando quiser falar.` : 'Seu microfone só abre quando você ativar.';
+}
+async function warmSelectedVoice() {
+  const generation = ++warmGeneration, voice = state.voice;
+  preparedVoice = ''; warmingVoice = '';
+  if (currentVoice().kind === 'natural' || mixer.active || mixer.starting) return;
+  warmingVoice = voice; $('voice-status').textContent = idleVoiceStatus();
+  try {
+    const result = await api.warm(voice, currentTuning());
+    if (generation !== warmGeneration || voice !== state.voice) return;
+    warmingVoice = ''; if (!result?.skipped) preparedVoice = voice;
+    if (!mixer.active && !mixer.starting) $('voice-status').textContent = idleVoiceStatus();
+  } catch {
+    if (generation !== warmGeneration || voice !== state.voice) return;
+    warmingVoice = '';
+    if (!mixer.active && !mixer.starting) $('voice-status').textContent = 'A preparação não terminou. Ative o microfone para tentar novamente.';
+  }
 }
 function renderVoices() {
   $('voice-options').replaceChildren();
@@ -27,9 +50,22 @@ function renderVoices() {
     if (voice.id === 'feminina') button.classList.add('voice-female');
     button.append(icon(voice.kind === 'natural' ? 'mic' : 'wave'));
     const name = document.createElement('strong'); name.textContent = voice.name;
-    const caption = document.createElement('span'); caption.textContent = voice.available ? voice.caption : 'Não instalado';
+    const caption = document.createElement('span'); caption.textContent = voice.available ? voice.caption : ['checking','downloading','installing'].includes(resourcesStatus.state) ? 'Preparando…' : 'Não instalado';
     button.append(name, caption); button.onclick = run(() => selectVoice(voice.id)); $('voice-options').append(button);
   }
+}
+async function renderResources(value) {
+  resourcesStatus = value;
+  $('resources-status').hidden = ['idle','ready'].includes(value.state);
+  $('resources-status').textContent = value.message;
+  $('resources-retry').hidden = value.state !== 'error';
+  if (!state) return;
+  if (value.state === 'ready') { voices = (await api.state()).voices; renderVoices(); }
+  else for (const voice of voices) {
+    const caption = $('voice-' + voice.id)?.querySelector('span');
+    if (caption && !voice.available) caption.textContent = ['checking','downloading','installing'].includes(value.state) ? 'Preparando…' : 'Não instalado';
+  }
+  for (const entry of voices) { const button = $('voice-' + entry.id); button.classList.toggle('selected', entry.id === state.voice); button.setAttribute('aria-pressed', String(entry.id === state.voice)); }
 }
 function isCableOutput(device) { return device?.kind === 'audiooutput' && /(?:cable input|(?:alto-falantes|speakers).*VB-Audio Virtual Cable)/i.test(device.label); }
 function isMonitorOutput(device) { return device.kind === 'audiooutput' && !/VB-Audio|Voicemeeter|virtual|CABLE (?:Input|Output)/i.test(device.label); }
@@ -125,7 +161,7 @@ function onAudio(event) {
   if ('mic' in event) {
     $('mic-badge').textContent = event.mic ? 'Microfone ativo' : 'Microfone desligado'; $('mic-badge').classList.toggle('live', event.mic);
     $('mic-toggle').classList.toggle('live', event.mic); $('mic-toggle').querySelector('span').textContent = event.mic ? 'Desativar microfone' : 'Ativar microfone';
-    $('voice-status').textContent = event.mic ? (state.voice !== 'normal' ? `${currentVoice().name} ativo. Sua fala está sendo transformada.` : 'Sua voz natural está na mistura.') : 'Seu microfone só abre quando você ativar.';
+    $('voice-status').textContent = event.mic ? (state.voice !== 'normal' ? `${currentVoice().name} ativo. Sua fala está sendo transformada.` : 'Sua voz natural está na mistura.') : idleVoiceStatus();
     if (!event.mic) { busy = false; $('latency').textContent = 'Local'; $('input-level').textContent = 'O nível aparece ao ativar o microfone.'; }
     monitorStatus();
   }
@@ -135,16 +171,19 @@ function onAudio(event) {
   if (event.error) fail(event.error);
   if (event.monitorError) { monitorStatus(); notice(event.monitorError); }
 }
-function selectVoice(voice) {
+async function selectVoice(voice) {
   const choice = voices.find(v => v.id === voice);
   if (!choice?.available) throw new Error('Esta voz não está instalada. Escolha uma das vozes disponíveis.');
   if (state.voice === voice && $('voice-' + voice).getAttribute('aria-pressed') === 'true') return;
   if (mixer.active || mixer.starting) { mixer.stopMic(); notice('Voz trocada. Ative o microfone para usar a nova voz.'); }
   state.voice = voice;
+  ++warmGeneration; warmingVoice = ''; preparedVoice = '';
   for (const entry of voices) { const button = $('voice-' + entry.id); button.classList.toggle('selected', entry.id === voice); button.setAttribute('aria-pressed', String(entry.id === voice)); }
   $('model-info').hidden = choice.kind === 'natural'; $('model-info-text').textContent = `${choice.name} · conversão local`;
   renderTuning();
-  return api.settings({ voice });
+  $('voice-status').textContent = idleVoiceStatus();
+  await api.settings({ voice });
+  if (state.voice === voice) void warmSelectedVoice();
 }
 function stopAll() { mixer.stopAll(); busy = false; $('mic-toggle').querySelector('span').textContent = 'Ativar microfone'; }
 function renderStartup(value) {
@@ -196,7 +235,7 @@ for (const [id, key, scale] of [['voice-pitch', 'pitchShift', 1], ['voice-simila
   $(id).oninput = () => { $(id + '-value').value = `${$(id).value}${scale === 1 ? '' : '%'}`; };
   $(id).onchange = run(() => saveTuning({ ...currentTuning(), [key]: Number($(id).value) / scale }));
 }
-$('reset-voice-tuning').onclick = run(() => saveTuning(currentVoice().defaultTuning || { pitchShift: 0, indexRatio: .65, inputGain: 1 }));
+$('reset-voice-tuning').onclick = run(() => saveTuning(currentVoice().defaultTuning || { pitchShift: 0, indexRatio: .15, inputGain: 1 }));
 for (const id of ['input-device', 'output-device']) $(id).onchange = run(async () => {
   if (id === 'output-device') await mixer.resetOutput(); else mixer.stopMic();
   const key = id === 'input-device' ? 'inputName' : 'outputName'; const label = devices.find(d => d.deviceId === $(id).value)?.label || '';
@@ -221,10 +260,18 @@ $('clear-shortcut').onclick = () => { $('edit-shortcut').value = ''; };
 $('close-editor').onclick = closeEditor;
 $('sound-editor').onsubmit = async event => { event.preventDefault(); try { state = await api.update(selected, { name: $('edit-name').value, category: $('edit-category').value, volume: Number($('edit-volume').value) / 100, shortcut: $('edit-shortcut').value.replace(/^Ctrl(?=\+)/, 'CommandOrControl') }); renderCategories(); renderSounds(); checkShortcuts(); closeEditor(); } catch (error) { $('editor-error').textContent = error.message; } };
 $('delete-sound').onclick = run(async () => { if (!$('delete-sound').dataset.confirm) { $('delete-sound').dataset.confirm = 'yes'; $('delete-sound').textContent = 'Confirmar remoção'; return; } mixer.stopSounds(); mixer.cache.delete(selected); state = await api.remove(selected); $('sound-editor').hidden = true; selected = null; renderCategories(); renderSounds(); });
-$('install-driver').onclick = run(async () => { const result = await api.driver(); notice(result?.downloadPage ? 'Na página oficial do VB-CABLE, baixe o pacote para Windows, extraia e execute VBCABLE_Setup_x64.exe. Escolha Install Driver e reinicie se solicitado; depois atualize os dispositivos no Voiz.' : 'No instalador, escolha Install Driver e autorize o Windows. Se solicitado, reinicie o PC; depois atualize os dispositivos no Voiz.'); });
+$('install-driver').onclick = run(async () => {
+  $('install-driver').disabled=true;
+  try { const result = await api.driver(); notice(result?.downloadPage ? 'A instalação do Voiz precisa ser concluída. Baixe o instalador mais recente em Atualizações para receber o cabo e as vozes.' : result.message); await refreshDevices(); }
+  finally { $('install-driver').disabled=false; }
+});
+$('cable-site').onclick = run(() => api.cableSite());
+$('cable-support').onclick = run(() => api.cableSite());
+$('resources-retry').onclick = run(async () => { stopAll(); await api.syncResources(); });
+api.onResources(value => { void renderResources(value).catch(fail); });
 $('open-logs').onclick = run(() => api.logs()); $('dismiss-notice').onclick = () => { $('notice').hidden = true; };
 api.onShortcut(run(async id => { if (id === 'stop') return stopAll(); if (document.activeElement === $('edit-shortcut')) return; const sound = state.sounds.find(s => s.id === id); if (sound) await mixer.play(sound, outputId()); }));
-api.onEngine(event => { if (mixer.starting && event.voice === state.voice) $('voice-status').textContent = event.state === 'loading' ? `${event.message} A primeira abertura pode levar alguns minutos.` : event.message; if (event.state === 'offline' && state.voice !== 'normal' && mixer.active) { mixer.stopMic(); notice('O motor de voz encerrou. Ative o microfone para tentar novamente.'); } });
+api.onEngine(event => { if (mixer.starting && event.voice === state.voice) $('voice-status').textContent = event.state === 'loading' ? `${event.message} A primeira abertura pode levar alguns minutos.` : event.message; if (event.state === 'offline') { preparedVoice = ''; if (state.voice !== 'normal' && mixer.active) { mixer.stopMic(); notice('O motor de voz encerrou. Ative o microfone para tentar novamente.'); } else if (!mixer.starting && !warmingVoice) $('voice-status').textContent = idleVoiceStatus(); } });
 navigator.mediaDevices.addEventListener('devicechange', run(refreshDevices));
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && document.activeElement !== $('edit-shortcut')) stopAll(); });
 window.addEventListener('beforeunload', () => { clearInterval(meterTimer); mixer.stopAll(); });
@@ -235,6 +282,7 @@ async function init() {
   if (!currentVoice()?.available) { state.voice = 'normal'; notice('A voz salva não está disponível. Sua voz natural foi selecionada.'); }
   for (const [id, key] of [['mic-volume', 'micVolume'], ['sound-volume', 'soundVolume'], ['master-volume', 'masterVolume']]) { $(id).value = state[key] * 100; $(id + '-value').value = `${Math.round(state[key] * 100)}%`; }
   await selectVoice(state.voice); renderCategories(); renderSounds(); checkShortcuts(); await refreshDevices();
+  await renderResources(await api.resourcesState());
   if (state.recovered) notice('A biblioteca tinha um erro. Uma cópia foi preservada em data para recuperação.');
   meterTimer = setInterval(() => { const level = Math.round(mixer.level() * 100); $('meter-fill').style.transform = `scaleX(${level / 100})`; $('meter-fill').parentElement.setAttribute('aria-valuenow', String(level)); }, 80);
 }

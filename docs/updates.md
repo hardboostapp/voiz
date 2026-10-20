@@ -12,7 +12,15 @@ O formato inclui somente o aplicativo e evita extratores de arquivo ou dependên
 
 O download fica em `updates/<UUID>/app`. Ao clicar em **Reiniciar e atualizar**, o áudio para e um helper PowerShell local valida o destino e sinaliza que está pronto. Só então o Voiz encerra seu motor e fecha. O helper aguarda o processo sair, move `app` para `updates/<UUID>/previous-app`, move o novo app para o lugar e reabre o Electron existente. Falha durante a troca restaura a pasta anterior. `updates/last-result.json` registra o resultado e a localização do backup.
 
-Não são atualizados `data`, `models`, `engine`, `logs`, `electron-profile`, o runtime Electron, o driver VB-CABLE ou os projetos vizinhos. Para a primeira instalação, a Release também oferece `Voiz-X.Y.Z-Setup.exe`, que inclui seu próprio Electron e permite preparar o motor e as vozes a partir das origens fixadas em `setup/downloads.json`. O VB-CABLE é instalado separadamente pelo site oficial.
+Essa troca substitui apenas `app`, preservando dados, perfis e projetos vizinhos. Ao iniciar o aplicativo atualizado, o catálogo `app/resources.json` confere e instala os recursos fornecidos que estiverem novos ou faltando. O runtime Electron continua sendo o existente; o Setup oferece sua instalação independente e a instalação do driver.
+
+## Motor e vozes fornecidos
+
+O catálogo fixa URLs públicas de assets em `hardboostapp/voiz`, tamanhos e SHA-256 do ZIP e de cada arquivo. O instalador baixa cerca de 2,2 GB na primeira execução. Os pacotes contêm o motor, módulos, modelos ONNX prontos e índices de Lula, Bolsonaro, Mano Brown e Feminina, com suas atribuições. O pacote base original VB-CABLE acompanha o Setup. Uma nova voz fornecida deve ser incluída no catálogo e no manifesto da próxima versão do aplicativo; assim chega às outras instalações depois da atualização, sem importação manual.
+
+Os caminhos gerenciados se limitam aos arquivos declarados do motor, slots de modelos e driver. O extrator rejeita travessia, nomes duplicados, arquivos extras e destinos com junctions. Cada arquivo é verificado antes da substituição; arquivos anteriores ficam em `updates/resources-previous`. Links físicos são substituídos por renomeação, preservando a origem. Sons particulares, biblioteca, ajustes por voz e modelos fora dos caminhos gerenciados não são publicados nem substituídos. O recibo em `data/installed-resources.json` evita conferir novamente todos os pesos a cada abertura; ausência ou mudança de tamanho provoca recuperação. Configurações pequenas podem ser atualizadas sem baixar novamente o modelo inteiro.
+
+O progresso mostra o pacote e os MB recebidos. Falha oferece nova tentativa. Downloads concluídos são reaproveitados; downloads parciais podem recomeçar. A preparação não captura microfone nem executa exportação ONNX no PC de destino. As bibliotecas PyInstaller são extraídas uma vez em `engine-runtime/<hash>`; o motor não gera uma nova cópia temporária a cada abertura.
 
 Para recuperação manual, feche o Voiz, preserve a pasta `app` atual com outro nome e copie `previous-app` indicada no relatório para `app`. As cópias de recuperação não são apagadas automaticamente.
 
@@ -27,6 +35,8 @@ O checksum garante integridade do transporte conforme os dados publicados no Git
 
 ## Primeiro instalador
 
-O Setup instala a base em `%LOCALAPPDATA%\Programs\Voiz`, cria atalhos e oferece a preparação das três vozes. Não inclui modelos, sons ou referências do computador de desenvolvimento. Em modo silencioso instala apenas a base; execute `Preparar vozes.cmd` para preparar IA depois. Para testes isolados, `/S /NOINTEGRATION=1 /D=<pasta temporária>` não cria atalhos nem altera o registro de instalação do usuário. A desinstalação preserva a biblioteca e os modelos.
+O Setup instala em `%LOCALAPPDATA%\Programs\Voiz`, cria atalhos, baixa o motor e as quatro vozes prontas e chama o instalador VB-CABLE original. Requer internet e 6 GB livres. O driver é verificado por SHA-256 e assinatura Authenticode do fabricante antes de pedir elevação ao Windows. Não importa certificados nem ignora confirmações do sistema. Se já houver dispositivo VB-Audio saudável, não reinstala. Uma instalação nova pode pedir reinicialização. O VB-CABLE é donationware; o crédito e o link de contribuição ao fabricante aparecem no instalador e no aplicativo.
 
-Os downloads de dependências usam HTTPS, revisões fixas e SHA-256. O motor começa no modo client com todos os dispositivos de áudio em -1. Não há captura de microfone na preparação. Falhas de rede mantêm os downloads para nova tentativa. A preparação deve ocorrer com o Voiz fechado pela bandeja.
+O modo silencioso também prepara os recursos. Somente o modo explícito de teste `/S /NOINTEGRATION=1 /D=<pasta temporária>` instala a base sem downloads, atalhos, registro ou driver. A desinstalação preserva a biblioteca e os modelos e não remove o cabo compartilhado com outros programas.
+
+O motor começa no modo client com todos os dispositivos de áudio em -1. **Preparar vozes.cmd** é a recuperação manual para concluir recursos, com o Voiz fechado pela bandeja. A interface também permite tentar novamente quando a preparação automática falha.

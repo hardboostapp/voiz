@@ -49,6 +49,8 @@ Section "Voiz: soundboard e voz natural" Base
   File "${SOURCE}\setup\prepare.cjs"
   File "${SOURCE}\setup\Install-AI.ps1"
   File "${SOURCE}\setup\Expand-Zip.ps1"
+  File "${SOURCE}\setup\install-resources.cjs"
+  File "${SOURCE}\setup\Install-Resources.ps1"
   FileOpen $0 "$INSTDIR\setup\install-marker.txt" w
   FileWrite $0 "voiz-install-v1"
   FileClose $0
@@ -61,6 +63,8 @@ Section "Voiz: soundboard e voz natural" Base
   File "${SOURCE}\setup\Preparar vozes.cmd"
   File "${SOURCE}\setup\LEIA-ANTES.txt"
   WriteUninstaller "$INSTDIR\Desinstalar Voiz.exe"
+  SetOutPath "$INSTDIR\drivers"
+  File /r "${CABLE}\*"
   ${If} $NoIntegration != "1"
   CreateShortCut "$DESKTOP\Voiz.lnk" "$INSTDIR\runtime\electron.exe" '$\"$INSTDIR\app$\"' "$INSTDIR\app\icon.ico"
   CreateDirectory "$SMPROGRAMS\Voiz"
@@ -71,15 +75,39 @@ Section "Voiz: soundboard e voz natural" Base
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Voiz" "UninstallString" '$\"$INSTDIR\Desinstalar Voiz.exe$\"'
   ${EndIf}
 SectionEnd
-Section "Preparar Lula, Bolsonaro e Mano Brown (requer internet)" Voices
-  IfSilent skip_ai
-  DetailPrint "Baixando o motor e os modelos das origens. A preparação pode levar vários minutos."
-  nsExec::ExecToLog 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\setup\Install-AI.ps1" -Root "$INSTDIR"'
+Section "Motor e todas as vozes prontas (download automatico)" Voices
+  SectionIn RO
+  ${If} $NoIntegration == "1"
+    Goto skip_ai
+  ${EndIf}
+  retry_resources:
+  DetailPrint "Instalando motor e vozes prontos. O progresso de cada download aparece abaixo."
+  nsExec::ExecToLog 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$INSTDIR\setup\Install-Resources.ps1" -Root "$INSTDIR"'
   Pop $0
   ${If} $0 != 0
-    MessageBox MB_ICONEXCLAMATION "O Voiz foi instalado, mas as vozes precisam terminar a preparação. Feche o Voiz e execute Preparar vozes.cmd na pasta instalada para tentar novamente."
+    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "A instalacao das vozes nao terminou. Confira a internet e o espaco livre e tente novamente. Os downloads ja concluidos serao reaproveitados." IDRETRY retry_resources
+    SetErrorLevel 1
+    Abort
   ${EndIf}
   skip_ai:
+SectionEnd
+Section "Cabo virtual VB-CABLE (VB-Audio, donationware)" CableSection
+  SectionIn RO
+  ${If} $NoIntegration == "1"
+    Goto skip_cable
+  ${EndIf}
+  retry_cable:
+  DetailPrint "Instalando o cabo virtual da VB-Audio. Autorize a confirmacao do Windows se aparecer."
+  nsExec::ExecToLog 'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$INSTDIR\app\install-cable.ps1" -Root "$INSTDIR" -DriverDirectory "$INSTDIR\drivers"'
+  Pop $0
+  ${If} $0 == 3010
+    SetRebootFlag true
+  ${ElseIf} $0 != 0
+    MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "O cabo virtual nao terminou a instalacao. Autorize o Windows para concluir o envio de audio a chamada." IDRETRY retry_cable
+    SetErrorLevel 1
+    Abort
+  ${EndIf}
+  skip_cable:
 SectionEnd
 Function LaunchVoiz
   Exec '$\"$INSTDIR\runtime\electron.exe$\" $\"$INSTDIR\app$\"'
@@ -105,6 +133,8 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\app"
   RMDir /r "$INSTDIR\runtime"
   RMDir /r "$INSTDIR\setup"
+  RMDir /r "$INSTDIR\drivers"
+  RMDir /r "$INSTDIR\engine-runtime"
   Delete "$INSTDIR\Preparar vozes.cmd"
   Delete "$INSTDIR\LEIA-ANTES.txt"
   Delete "$INSTDIR\Desinstalar Voiz.exe"

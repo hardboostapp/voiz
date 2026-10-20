@@ -1,16 +1,17 @@
 Voiz para Windows 10/11 de 64 bits
 
-O instalador inclui o aplicativo e o Electron. Soundboard e voz Natural funcionam após instalar.
-A opção de preparar vozes baixa o motor VCClient e os modelos diretamente das origens, verifica SHA-256 e converte os três modelos para ONNX. Essa etapa exige internet, espaço e alguns minutos. Nenhum microfone é aberto durante a preparação. O instalador silencioso instala apenas a base; depois execute Preparar vozes.cmd.
+O assistente instala o aplicativo, o motor e as vozes Lula, Bolsonaro, Mano Brown e Feminina ja convertidas para ONNX. O download automatico dos recursos precisa de internet e pode passar de 2 GB. Reserve pelo menos 6 GB livres. O andamento de cada pacote e mostrado durante a instalacao. Nenhum microfone e aberto nessa etapa.
 
-Modelos de imitação por IA, sem vínculo oficial com as pessoas. Lula: Ivan198542. Bolsonaro: LH6582 / Ivan198542. A origem utilizada declara CC BY-NC 4.0 para ambos: uso não comercial e atribuição. Mano Brown: vitor007009, OpenRAIL declarada. Leia setup/downloads.json e as páginas de origem. Modelos não são redistribuídos no GitHub do Voiz. A prévia feminina privada e os sons do desenvolvedor não fazem parte deste instalador.
+O pacote inclui o cabo virtual base VB-CABLE, da VB-Audio (Vincent Burel), sem modificar seus arquivos. VB-CABLE e donationware: se voce achar util, pode apoiar o fabricante em https://vb-audio.com/Cable/ (www.vb-cable.com). Todas as contribuicoes sao bem-vindas. A permissao de integracao esta publicada em https://vb-audio.com/Services/licensing.htm, na secao VB-CABLE Distribution with other product. O Windows pede autorizacao de administrador para instalar o driver e pode precisar reiniciar. Um cabo ja instalado e preservado. Desinstalar o Voiz nao remove o driver, pois ele pode ser usado por outros programas.
 
-No Voiz, use CABLE Input como saída. Na chamada, use CABLE Output como microfone e seus fones como saída. Baixe o VB-CABLE do site oficial https://vb-audio.com/Cable/ e instale o driver se necessário. O instalador do Voiz não instala drivers automaticamente.
+Na chamada, escolha CABLE Output como microfone e mantenha seus fones como saida. O Voiz seleciona CABLE Input como saida quando encontrado. Voce ainda precisa escolher seu microfone real. O microfone so abre ao clicar em Ativar microfone.
 
-As novas versões ficam disponíveis em Atualizações > Buscar atualização > Baixar > Reiniciar e atualizar. Todos consultam o mesmo repositório público, sem login. Cada instalação conserva seus próprios sons, atalhos, modelos e configurações. As atualizações do aplicativo não substituem o motor, o runtime ou o driver.
+Modelos de imitacao por IA, sem vinculo oficial com as pessoas. Lula: Ivan198542. Bolsonaro: LH6582 / Ivan198542. A origem usada declara CC BY-NC 4.0 para ambos: uso nao comercial e atribuicao. https://creativecommons.org/licenses/by-nc/4.0/ e https://huggingface.co/Ivan198542/rvcmodels. Mano Brown: vitor007009, OpenRAIL declarada, https://huggingface.co/vitor007009/Mano_Brown. Feminina: Wismut/RVC_US_Female_1, Apache-2.0 declarada, https://huggingface.co/Wismut/RVC_US_Female_1. O modelo feminino original e em ingles. Atribuicoes e modificacoes acompanham os modelos em FONTE.txt. As vozes prontas sao distribuidas em pacotes versionados; amostras e referencias pessoais nao fazem parte deles.
 
-Fechar no X mantém o Voiz na bandeja. Para sair, use Sair do Voiz no ícone. Iniciar com o Windows é opcional; o microfone sempre começa desligado.
+Buscar atualizacao > Baixar > Reiniciar e atualizar instala a nova versao. Ao abrir, o Voiz recebe automaticamente os modelos novos ou atualizados do catalogo. Cada pessoa mantem seus proprios sons, atalhos e ajustes. Os sons do Soundboard nao sao compartilhados.
 
-Downloads e atualizações: https://github.com/hardboostapp/voiz/releases/latest
-Motor original e licenças: https://github.com/w-okada/voice-changer
-Electron e licenças de terceiros acompanham a pasta runtime.
+Fechar no X mantem o Voiz na bandeja. Para sair, escolha Sair do Voiz no icone. Iniciar com o Windows e opcional; o microfone sempre comeca desligado. A voz escolhida pode ser preparada em segundo plano para ativar mais rapidamente.
+
+Downloads: https://github.com/hardboostapp/voiz/releases/latest
+Motor e licencas: https://github.com/w-okada/voice-changer
+Electron e suas licencas acompanham a pasta runtime. As bibliotecas do motor sao extraidas uma unica vez em engine-runtime e reutilizadas.

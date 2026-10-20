@@ -13,6 +13,7 @@
 !/scripts/build-release.cjs
 !/scripts/audit-public.cjs
 !/scripts/build-installer.cjs
+!/scripts/build-resources.cjs
 /docs/*
 !/docs/updates.md
 /tests/fixtures/

@@ -1,0 +1,593 @@
+{
+  "schema": 1,
+  "revision": 1,
+  "packages": [
+    {
+      "id": "virtual-cable",
+      "name": "Cabo virtual VB-CABLE",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/virtual-cable.zip",
+      "bytes": 1299956,
+      "sha256": "c611f6fca1cd118141a7e5715b0e916e5f2ceeef6e8a284e0ab7a05e0b5acc6f",
+      "files": [
+        {
+          "path": "drivers/pin_in.ico",
+          "bytes": 7358,
+          "sha256": "934865449455103c1c5997d8220acd160c3891f8a870f8e745b743d12681ac42"
+        },
+        {
+          "path": "drivers/pin_out.ico",
+          "bytes": 7358,
+          "sha256": "e8728a811e1f1af7d2ba31f77e47d449d5bba091e3e89a0df325ac7a3e67652c"
+        },
+        {
+          "path": "drivers/readme.txt",
+          "bytes": 3846,
+          "sha256": "f865f3e78e37006d48e56c93f51eff4ca79acda9969854400d79bfa3db38a8d5"
+        },
+        {
+          "path": "drivers/VB-CABLE-NOTICE.txt",
+          "bytes": 514,
+          "sha256": "90b35f583d5df9a4cfbaee109db3546657e4bb36d9226c82018d3126ba939255"
+        },
+        {
+          "path": "drivers/vbaudio_cable_2003.cat",
+          "bytes": 8868,
+          "sha256": "23a10e3bcd6ffe0de6d3d67830be4c447724b3299e13e954dd6bd2257cf55da1"
+        },
+        {
+          "path": "drivers/vbaudio_cable_2003.sys",
+          "bytes": 34024,
+          "sha256": "9650e20c38429d4680a7e603ecbe6601914ec4c94f8473112f21515bf53b84cf"
+        },
+        {
+          "path": "drivers/vbaudio_cable_vista.cat",
+          "bytes": 8872,
+          "sha256": "810b30193a400b1559302c23f81ef8aaadf038b3caf3aff9bf200b59688a2def"
+        },
+        {
+          "path": "drivers/vbaudio_cable_vista.sys",
+          "bytes": 34024,
+          "sha256": "8b02c26313b75ceb8fb9bd16b6b167cf70d7f3bc977dfc1986c0859f8c72b49f"
+        },
+        {
+          "path": "drivers/vbaudio_cable_win7.cat",
+          "bytes": 8868,
+          "sha256": "1c38afacf115818c925bc26faf216e3563e85bbc4d6d793e5f76f2aa670d08e7"
+        },
+        {
+          "path": "drivers/vbaudio_cable_win7.sys",
+          "bytes": 34024,
+          "sha256": "d047e3ee66e3ee023e598232ea22aa28dbb39adeabe818adfb2a72ab738df0b9"
+        },
+        {
+          "path": "drivers/vbaudio_cable_xp.cat",
+          "bytes": 8860,
+          "sha256": "51434ebbda13caf3c7617ef3035126baacca3e523feaf6828b398d52503d70d2"
+        },
+        {
+          "path": "drivers/vbaudio_cable_xp.sys",
+          "bytes": 34024,
+          "sha256": "9f9bc80a96cc94c761887749e51d9b4fb7ee6741ce624b8b2f9f85cd2e3fb02e"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_2003.cat",
+          "bytes": 8876,
+          "sha256": "70f88e34c857c999367eb5b0303e23f5676b15a79ed4054f374749232baa0e3a"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_2003.sys",
+          "bytes": 41192,
+          "sha256": "5a726f3f1616f587c9f118bf337fd359df3f7cb9fc967a14229d59a31f2a9720"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_vista.cat",
+          "bytes": 8880,
+          "sha256": "cc17731e91f2f071e4a108bba34a2b8dcb69ea5975f4b9c39fcbc670e5cf15fb"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_vista.sys",
+          "bytes": 41192,
+          "sha256": "703572fa9e8aa1616e6b2abd36b91a4718de77eadc02ae05ed2c8f304d058afc"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_win10.cat",
+          "bytes": 12862,
+          "sha256": "0a921ebadbe39cf3fa7c14ff37d1ca22565a9651244bd3ac177dc810bc99072e"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_win10.sys",
+          "bytes": 140760,
+          "sha256": "f01344602472f1b527de5ee98f18987c03db48fea444e457d061e937f1d531d5"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_win7.cat",
+          "bytes": 8876,
+          "sha256": "800b541f06bba3925ba058e7cc7ca837cfd4d845e073309eb2a9d36a2626403a"
+        },
+        {
+          "path": "drivers/vbaudio_cable64_win7.sys",
+          "bytes": 41192,
+          "sha256": "c7f3be383c81ab9aa642479f95872e40e19a4cfd72d4c8d7de80abc11b713e21"
+        },
+        {
+          "path": "drivers/vbaudio_cable64arm_win10.sys",
+          "bytes": 149976,
+          "sha256": "2dc35db3dfad0f25771a3e59af38e8b1268878ebe127476ea75fee109f2927dd"
+        },
+        {
+          "path": "drivers/VBCABLE_ControlPanel.exe",
+          "bytes": 930048,
+          "sha256": "f5b44706fe7ba2eed0516dee791f826dc7a9891e997f6ce9704e2899300b14ff"
+        },
+        {
+          "path": "drivers/VBCABLE_Setup_x64.exe",
+          "bytes": 937728,
+          "sha256": "734c35dfa6d98f48782a451633ceb471166ec70d60482fd89a1123d0ee3c4f41"
+        },
+        {
+          "path": "drivers/VBCABLE_Setup.exe",
+          "bytes": 914176,
+          "sha256": "01ffc86b623ff3c75a883aa900c0215a89482988e1c8e55988fc0a9fb513dbed"
+        },
+        {
+          "path": "drivers/vbMmeCable_2003.inf",
+          "bytes": 4586,
+          "sha256": "64b67f80535d92a1a8625b4c9b9f7302ed959cb375947ca993b8cbaf205d3569"
+        },
+        {
+          "path": "drivers/vbMmeCable_vista.inf",
+          "bytes": 4142,
+          "sha256": "50761a7e817b3a5e96a4eb8e3d31fbc249b0601343dcb732dd3cbe0b0a70f232"
+        },
+        {
+          "path": "drivers/vbMmeCable_win7.inf",
+          "bytes": 4138,
+          "sha256": "5664f33116c1021f4280cfde1c571554fbb70b5480bd58a4fd53b281cd4f515c"
+        },
+        {
+          "path": "drivers/vbMmeCable_xp.inf",
+          "bytes": 4576,
+          "sha256": "58d9737fa732c11c8cc52839a3f61ecf2cb2a98a7dfffe423e3e591de7f56d46"
+        },
+        {
+          "path": "drivers/vbMmeCable64_2003.inf",
+          "bytes": 4596,
+          "sha256": "73aa40eef245da221c6fc6ea3299983421c9a9051df8da7414652304f01bb835"
+        },
+        {
+          "path": "drivers/vbMmeCable64_vista.inf",
+          "bytes": 4150,
+          "sha256": "340feb0ce66ffb7922595a763bf23d2fec07bed9e50b6cb6327e559174c515d4"
+        },
+        {
+          "path": "drivers/vbMmeCable64_win10.inf",
+          "bytes": 11361,
+          "sha256": "61c857be74831cc299d9be62f8d49d137f14063454fc54f859d5bc9b4b813daf"
+        },
+        {
+          "path": "drivers/vbMmeCable64_win7.inf",
+          "bytes": 4146,
+          "sha256": "da35387ccfe813f5c553bb7e0caf4e67adbb4429e742c2bd3c2014f80e6ec516"
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "name": "Motor de voz",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/engine.zip",
+      "bytes": 423217158,
+      "sha256": "0cff2081c2fc90283445840c89068126ebd86c34c44e89a3eea7f8370c4bcde2",
+      "files": [
+        {
+          "path": "engine/licenses/VCClient-LICENSE.txt",
+          "bytes": 6432,
+          "sha256": "7cdb6ac05d6f29e421a6631046423cadd3f9ca881ca1fd69ddf71b72822a1078",
+          "inline": "MIT License\n\nCopyright (c) 2022 Wataru Okada\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nMIT License\n\nCopyright (c) 2022 Isle Tennos\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nMIT License\n\nCopyright (c) 2021 Jaehyeon Kim\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nMIT License\n\nCopyright (c) 2023 liujing04\nCopyright (c) 2023 源文雨\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nMIT License\n\nCopyright (c) 2023 yxlllc\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nMIT License\n\nCopyright (c) 2023 yxlllc\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+        },
+        {
+          "path": "engine/main.exe",
+          "bytes": 424399628,
+          "sha256": "903a21774805c67be52cf9b43eb80cd8515a8183272885b33ba8882ea8705800"
+        },
+        {
+          "path": "engine/web_front/945.index.js",
+          "bytes": 9589,
+          "sha256": "6796a2de4bc9648487cce5ef4a292da38fa48af4920a236a2b543256cbb3ab58"
+        },
+        {
+          "path": "engine/web_front/assets/beatrice_jvs/female-clickable.svg",
+          "bytes": 58500,
+          "sha256": "88461c03a4e00e2bf4d49e876d5d7835f121e7d63b3af660126a844219950236"
+        },
+        {
+          "path": "engine/web_front/assets/beatrice_jvs/male-clickable.svg",
+          "bytes": 56399,
+          "sha256": "8c78343104ed52b84af8e480d1f0bd12e2103bc0227364767466c2089ca6e306"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition_colab.txt",
+          "bytes": 5,
+          "sha256": "1e3bd9448dc9acaac82c80436f91c52c22ac52f27d52c06994d0fd1edfb375ff"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition_cuda.txt",
+          "bytes": 4,
+          "sha256": "e636c973d999a634277daa3a43db4adb0e7fde4ef22d47c8e833adb29bd2e99f"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition_dml.txt",
+          "bytes": 3,
+          "sha256": "bf89c2eb19a71b812e51d00d4da5c7e706c6b5d7dc2f162f55ba3576d5d40915"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition_mac.txt",
+          "bytes": 3,
+          "sha256": "348a629f5ceed032c3e8706ec47d9bfafb00fb4250b018dd965435ca50cb836e"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition_web.txt",
+          "bytes": 3,
+          "sha256": "4b5e57f6eb2f42b9039b3d1e13929295f231749c510cbe341cd68036d9af97e2"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/edition.txt",
+          "bytes": 3,
+          "sha256": "bf89c2eb19a71b812e51d00d4da5c7e706c6b5d7dc2f162f55ba3576d5d40915"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/GUI.json",
+          "bytes": 469,
+          "sha256": "8c2420795f2c260d71141e3b167de621a1e70ac394a8cf403d0d8c229f7dd102"
+        },
+        {
+          "path": "engine/web_front/assets/gui_settings/version.txt",
+          "bytes": 11,
+          "sha256": "7ce9e4a5cad83ee4779b37f53f9a8cf360d49ea3dda55e4384f913d91769780b"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/ar/translation.json",
+          "bytes": 14582,
+          "sha256": "c13ca124d095a7fcdd9551f8473b9bab2ec387e71b29fe03d3fcc2b2c7462cf6"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/de/translation.json",
+          "bytes": 13265,
+          "sha256": "1efe1e0e3fff6b772a018cd728b9e4582ec7e29ae324fdbf116b0f7bb4d0f9c2"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/el/translation.json",
+          "bytes": 16811,
+          "sha256": "f9dc7b7b74d68270924fafd90060d8ff9fe53140f36a364f268a5f41f0b63a24"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/en/translation.json",
+          "bytes": 12535,
+          "sha256": "b4e589d721f25f828ec5d72693e375d60ef2658bf4989062053e411d318b73ee"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/es/translation.json",
+          "bytes": 13264,
+          "sha256": "2ec34c58dbdfc3fa56161fb0c1b4f4228be883bb6fb2f7c84d555d30f80810fc"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/fr/translation.json",
+          "bytes": 13461,
+          "sha256": "ee83425175e47d136f79108503d806504bce020ca577566db6c8ebaf27e6704d"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/it/translation.json",
+          "bytes": 13005,
+          "sha256": "e58ac5bbbc19b7d8892efa92cc11c826c3d2d594744e5d0a981ee6ae886ed6e7"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/ja/translation.json",
+          "bytes": 13817,
+          "sha256": "542918d7c6f4a9b2efecb79affed44586ca7d7f5769e8a1ed78b8730e1a1af09"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/ko/translation.json",
+          "bytes": 13385,
+          "sha256": "f4a5ff255fc55a3d79e69b59b787e41e96a7b1b2d1ed374dc302efafefdcab39"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/la/translation.json",
+          "bytes": 12635,
+          "sha256": "d49a88f1cf418a2839518ec250fe52874a2e3a26ef240e8125d376200ef68ef2"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/ms/translation.json",
+          "bytes": 12644,
+          "sha256": "9bb82844425755d44f4be48e872f36b3883b5e6fd62cf8da5da55418c9c68269"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/ru/translation.json",
+          "bytes": 16521,
+          "sha256": "1eadf1755d19d8b294818c386008dfa359a0568b0f810efa7ad6e2c631455cd1"
+        },
+        {
+          "path": "engine/web_front/assets/i18n/zh/translation.json",
+          "bytes": 12291,
+          "sha256": "bf612368eb477be961f33bb47590cda98e3c261019baae30b308e281a734f7db"
+        },
+        {
+          "path": "engine/web_front/assets/icons/blank.png",
+          "bytes": 1426,
+          "sha256": "41e7a59c886f43f552512536a25813de53dc6e07c07718c1ffd52eb51026d467"
+        },
+        {
+          "path": "engine/web_front/assets/icons/buymeacoffee.png",
+          "bytes": 12176,
+          "sha256": "543dfb9ea514677893da4a2c61c99c7dc448903d7c3689e1a667f74f253c406b"
+        },
+        {
+          "path": "engine/web_front/assets/icons/file-text.svg",
+          "bytes": 473,
+          "sha256": "fc90eb41c92f511b6e4076673d2da28476f140e4614522e85511e8215f9f530a"
+        },
+        {
+          "path": "engine/web_front/assets/icons/flect.png",
+          "bytes": 1281,
+          "sha256": "d463bd7464fe5f6c606c9dc0d1476461b85cf881cba494aaef9324a08c2a23f0"
+        },
+        {
+          "path": "engine/web_front/assets/icons/folder.svg",
+          "bytes": 311,
+          "sha256": "ae1736e1bb3bc356489d1147c796ae3412367d286ede440b82edd399be7015f7"
+        },
+        {
+          "path": "engine/web_front/assets/icons/github.svg",
+          "bytes": 522,
+          "sha256": "6745736881ba68e132bb0f88304d2039771abef9b402e89cec124ce4157662c0"
+        },
+        {
+          "path": "engine/web_front/assets/icons/help-circle.svg",
+          "bytes": 365,
+          "sha256": "d5828ed7c2074badfc895bf78e25bc301f6cfa22f32bdef994e40aec9a71e81c"
+        },
+        {
+          "path": "engine/web_front/assets/icons/home.svg",
+          "bytes": 327,
+          "sha256": "e0ff66eca4b89f4e2680ab8975be69e4a9c15c5b04634c06cdc6c707e6768ed3"
+        },
+        {
+          "path": "engine/web_front/assets/icons/human.png",
+          "bytes": 26073,
+          "sha256": "88f69291f3d6019b2738a053200e9da25a4a863bde9c6f627e3bc7cdeab03ac6"
+        },
+        {
+          "path": "engine/web_front/assets/icons/linkedin.svg",
+          "bytes": 395,
+          "sha256": "97edb73c635c95cb6a518f0c14b69d8ad381ded06f27ac74348a580f3dec0737"
+        },
+        {
+          "path": "engine/web_front/assets/icons/monitor.svg",
+          "bytes": 370,
+          "sha256": "89904afc140438b9d82aa26a0f0518bf74d45382054e2ae8bc484ad5829fa046"
+        },
+        {
+          "path": "engine/web_front/assets/icons/noimage.png",
+          "bytes": 2135,
+          "sha256": "431003f4b3766b66096cf804d4f5ab8cf71d48f7b12b68fef502f2116d238881"
+        },
+        {
+          "path": "engine/web_front/assets/icons/tool.svg",
+          "bytes": 386,
+          "sha256": "d7d4626f8a65813bf872c00f1e7ce4983c03413a56f5ee14d9e8bb422131296b"
+        },
+        {
+          "path": "engine/web_front/assets/icons/twitter.svg",
+          "bytes": 403,
+          "sha256": "9e64008ff96953a464c20f5f9d6f31b6d5ea2f645a18f80d1e7cb9c4d46d3663"
+        },
+        {
+          "path": "engine/web_front/assets/icons/zun.png",
+          "bytes": 5429,
+          "sha256": "0b2ac0291fd78139e95293bc429eee75a12595864f7a750f20232ad9f041dd57"
+        },
+        {
+          "path": "engine/web_front/favicon.ico",
+          "bytes": 34494,
+          "sha256": "812522caf868741d61f17b546de8ec6d3b0552d5c532fa0f36b99ef5c922ec4f"
+        },
+        {
+          "path": "engine/web_front/index.html",
+          "bytes": 370,
+          "sha256": "b2ce864f7a78974fb5a8eb01e42df5d8dd9204ede3d9751dd4b503f815f15901"
+        },
+        {
+          "path": "engine/web_front/index.js",
+          "bytes": 2633424,
+          "sha256": "697570e77de1cc31fcbdbdb6440a1be982c336d23017ed8381835141eafab4de"
+        },
+        {
+          "path": "engine/web_front/index.js.LICENSE.txt",
+          "bytes": 1234,
+          "sha256": "daacc97692da504a8ef1d353f30c3c8411cd8b5ecf135a10a5793bc1fa747e8d"
+        },
+        {
+          "path": "engine/web_front/licenses-js.json",
+          "bytes": 134816,
+          "sha256": "4f3919c6ba72c0ae08582bfd5ad1da715a26a5c5cf794f5487b2f9406f17e698"
+        },
+        {
+          "path": "engine/web_front/licenses-py.json",
+          "bytes": 23953,
+          "sha256": "6ebd29c3edf50e910df0e1540409f170ad18afab27d410e2ebbe23255633d90c"
+        },
+        {
+          "path": "engine/web_front/static/chunks/2ac7324bd361da5efcf7.css",
+          "bytes": 45146,
+          "sha256": "18cd5b31f69b0bac5b1c6f39f97149f264588af38d29486c03d6fadbc2e246d6"
+        }
+      ]
+    },
+    {
+      "id": "modules",
+      "name": "Bibliotecas de conversão",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/modules.zip",
+      "bytes": 1154365816,
+      "sha256": "ed4d6071a40efc65401e84be0b21ad25e697ead73d8936fe8a0057ab6861b392",
+      "files": [
+        {
+          "path": "engine/modules/contentvec/contentvec-f.onnx",
+          "bytes": 378550151,
+          "sha256": "4b31ed3d95a568fab7952de923ff7f7d3d17128ea6fce69f665509d24c3156db"
+        },
+        {
+          "path": "engine/modules/contentvec/hubert_base.pt",
+          "bytes": 189507909,
+          "sha256": "f54b40fd2802423a5643779c4861af1e9ee9c1564dc9d32f54f20b5ffba7db96"
+        },
+        {
+          "path": "engine/modules/onnxcrepe/full.onnx",
+          "bytes": 88984790,
+          "sha256": "119845c72c702e052e5262430f9d120bce46176689aa226c39d09dea5cc3a610"
+        },
+        {
+          "path": "engine/modules/onnxcrepe/tiny.onnx",
+          "bytes": 1955762,
+          "sha256": "91fc2a0fd10f965dbf7775995daf50e99273caedd7efd00001f23be649da1bc3"
+        },
+        {
+          "path": "engine/modules/rinna_hubert/rinna_hubert_base-f.onnx",
+          "bytes": 378550151,
+          "sha256": "d00e262757fa1550faac53fa6140dad16ca75603a36ecfead468920a9f744a16"
+        },
+        {
+          "path": "engine/modules/rmvpe/rmvpe_20231006.onnx",
+          "bytes": 362003174,
+          "sha256": "84f0586308e36157f75b77c8591bf636d6719c0c4ba95f8faf3df479e7566219"
+        },
+        {
+          "path": "engine/modules/rmvpe/rmvpe_20231006.pt",
+          "bytes": 181184272,
+          "sha256": "6d62215f4306e3ca278246188607209f09af3dc77ed4232efdd069798c4ec193"
+        }
+      ]
+    },
+    {
+      "id": "voice-lula",
+      "name": "Lula",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/voice-lula.zip",
+      "bytes": 123639961,
+      "sha256": "0af96240e5929f80a53405fbab4d3ac7d71555d0493cb00fc1b4a06cec861652",
+      "files": [
+        {
+          "path": "engine/model_dir/6/added_IVF502_Flat_nprobe_1_Lula_v2.index",
+          "bytes": 61895819,
+          "sha256": "934ec60098fbab09ea5c23f4cde7207d9adf8f90ee1a4eeada4725527978a4e8"
+        },
+        {
+          "path": "engine/model_dir/6/FONTE.txt",
+          "bytes": 254,
+          "sha256": "4bfe3503800f2dec16af95cb31ce8c6b1cc334a49dd54f6995a42f576ac2ee93",
+          "inline": "Ivan198542 · CC BY-NC 4.0 · https://huggingface.co/Ivan198542/rvcmodels\nConversão local do PTH para ONNX pelo VCClient. Modelo de imitação por IA, sem vínculo oficial.\nLicenças e fontes: https://github.com/hardboostapp/voiz#modelos-e-atribuição\n"
+        },
+        {
+          "path": "engine/model_dir/6/Lula.onnx",
+          "bytes": 110408505,
+          "sha256": "b92617572c1c609828f030ee0ddb8579b735867322daac835a8cfa98634c5033"
+        },
+        {
+          "path": "engine/model_dir/6/params.json",
+          "bytes": 574,
+          "sha256": "471ff6575e6b3b4ea64786d40fa5f49c8e7ee79850304b855aa02d489af66320",
+          "inline": "{\n  \"slot_index\": 6,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Lula\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"Lula.onnx\",\n  \"index_file\": \"added_IVF502_Flat_nprobe_1_Lula_v2.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 40000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 0,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "voice-bolsonaro",
+      "name": "Bolsonaro",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/voice-bolsonaro.zip",
+      "bytes": 112549251,
+      "sha256": "4514038320f1dd94a989fee530b104b76b19a8a39ac4e019afbca52fd3721b9d",
+      "files": [
+        {
+          "path": "engine/model_dir/8/added_IVF354_Flat_nprobe_1_Bolsonaro_v2.index",
+          "bytes": 43616019,
+          "sha256": "195220cfe23e62c1094f8e3394b5547925f9c29d7bdd039230d6c3488a471048"
+        },
+        {
+          "path": "engine/model_dir/8/Bolsonaro.onnx",
+          "bytes": 110408505,
+          "sha256": "4123e7210d303d94139ebf9565e7f1807a618fbbc8a276bd78e5a80030555e36"
+        },
+        {
+          "path": "engine/model_dir/8/FONTE.txt",
+          "bytes": 279,
+          "sha256": "ff28ab1eec238d78a43972f5520e2115031544d57bf49e5f305118d3d1589c0f",
+          "inline": "LH6582 / Ivan198542 · CC BY-NC 4.0 na origem usada · https://huggingface.co/Ivan198542/rvcmodels\nConversão local do PTH para ONNX pelo VCClient. Modelo de imitação por IA, sem vínculo oficial.\nLicenças e fontes: https://github.com/hardboostapp/voiz#modelos-e-atribuição\n"
+        },
+        {
+          "path": "engine/model_dir/8/params.json",
+          "bytes": 589,
+          "sha256": "1a67797cdd28fe1bb845f065edc2cd7f95914898108fec595cb5c4953587399f",
+          "inline": "{\n  \"slot_index\": 8,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Bolsonaro\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"Bolsonaro.onnx\",\n  \"index_file\": \"added_IVF354_Flat_nprobe_1_Bolsonaro_v2.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 40000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 0,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "voice-mano-brown",
+      "name": "Mano Brown",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/voice-mano-brown.zip",
+      "bytes": 185236020,
+      "sha256": "6ac3eeaf6be2ff22baaf92dab1f20de69caa9efe2a2de82ea8b73d2e64e84ca9",
+      "files": [
+        {
+          "path": "engine/model_dir/10/added_IVF1327_Flat_nprobe_1_Brown_v2.index",
+          "bytes": 163600499,
+          "sha256": "7a79c6850d9e17fc4f4b4a288d58aefd2dc275897821968336441de6a013f2d3"
+        },
+        {
+          "path": "engine/model_dir/10/Brown.onnx",
+          "bytes": 110408505,
+          "sha256": "1f8e72db16b5ab76792117123f2ad6f0c2392ef8453dcbb7747368f76f5cae58"
+        },
+        {
+          "path": "engine/model_dir/10/FONTE.txt",
+          "bytes": 263,
+          "sha256": "c9ea2d3396c9f6df061f6b825bf7cab814c7fea64e16d9e7da0f8c3de10ad484",
+          "inline": "vitor007009 · OpenRAIL declarada · https://huggingface.co/vitor007009/Mano_Brown\nConversão local do PTH para ONNX pelo VCClient. Modelo de imitação por IA, sem vínculo oficial.\nLicenças e fontes: https://github.com/hardboostapp/voiz#modelos-e-atribuição\n"
+        },
+        {
+          "path": "engine/model_dir/10/params.json",
+          "bytes": 584,
+          "sha256": "4ce6b10ce8fe957221278b4d55f348fce5b89ca012d20ff0e971e3dfeb26b4b5",
+          "inline": "{\n  \"slot_index\": 10,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Mano Brown\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"Brown.onnx\",\n  \"index_file\": \"added_IVF1327_Flat_nprobe_1_Brown_v2.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 40000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 0,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "voice-feminina",
+      "name": "Feminina",
+      "url": "https://github.com/hardboostapp/voiz/releases/download/resources-2026-10-20-r1/voice-feminina.zip",
+      "bytes": 207027137,
+      "sha256": "91ed3c85554e59ea974d2f4dfa29f6aa6b930c34a227d0b1085482cd7d49228e",
+      "files": [
+        {
+          "path": "engine/model_dir/12/Female_1.index",
+          "bytes": 194012419,
+          "sha256": "b15d67755aaf7d62c5d26b6fc10df7ddb2f625b17d15248a42f0ede78b47d105"
+        },
+        {
+          "path": "engine/model_dir/12/Female_1.onnx",
+          "bytes": 115127097,
+          "sha256": "b1ee8ab569302fa401316a77e93bacd34e1eddf97f5c8e2b1dda7f89d19d85ca"
+        },
+        {
+          "path": "engine/model_dir/12/FONTE.txt",
+          "bytes": 260,
+          "sha256": "24a388ad4d2f23b19c69ee00111bab01026131eda843a5ba932b3ca6c26daf41",
+          "inline": "Wismut · Apache-2.0 declarada · https://huggingface.co/Wismut/RVC_US_Female_1\nConversão local do PTH para ONNX pelo VCClient. Modelo de imitação por IA, sem vínculo oficial.\nLicenças e fontes: https://github.com/hardboostapp/voiz#modelos-e-atribuição\n"
+        },
+        {
+          "path": "engine/model_dir/12/params.json",
+          "bytes": 557,
+          "sha256": "e489a3b910a2b0c22b5784dc071456f97f5d81773e93d386fe4f6b57ff0ae70d",
+          "inline": "{\n  \"slot_index\": 12,\n  \"voice_changer_type\": \"RVC\",\n  \"name\": \"Feminina\",\n  \"description\": \"\",\n  \"credit\": \"\",\n  \"terms_of_use_url\": \"\",\n  \"icon_file\": null,\n  \"speakers\": {},\n  \"model_file\": \"Female_1.onnx\",\n  \"index_file\": \"Female_1.index\",\n  \"is_onnx\": true,\n  \"inferencer_type\": \"onnxRVC\",\n  \"sample_rate\": 48000,\n  \"is_f0\": true,\n  \"deprecated\": false,\n  \"embedder\": \"hubert_base_l12\",\n  \"pitch_estimator\": \"rmvpe_onnx\",\n  \"sample_id\": null,\n  \"version\": \"v3.0\",\n  \"chunk_sec\": 0.4,\n  \"pitch_shift\": 8,\n  \"index_ratio\": 0.15,\n  \"protect_ratio\": 0.1\n}\n"
+        }
+      ]
+    }
+  ]
+}

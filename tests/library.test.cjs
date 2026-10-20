@@ -21,10 +21,29 @@ test('voice tuning persists separately per person and cannot exceed valid ranges
   const { root, library } = fixture(t);
   library.settings({ voiceTuning: { lula: { pitchShift: -3, inputGain: 1.4 }, bolsonaro: { pitchShift: 999, indexRatio: 8, inputGain: -20 } } });
   const loaded = new Library(path.join(root, 'data')).state.voiceTuning;
-  assert.deepEqual(loaded.lula, { pitchShift: -3, indexRatio: .65, inputGain: 1.4 });
+  assert.deepEqual(loaded.lula, { pitchShift: -3, indexRatio: .15, inputGain: 1.4 });
   assert.deepEqual(loaded.bolsonaro, { pitchShift: 12, indexRatio: .85, inputGain: .5 });
-  assert.deepEqual(loaded['mano-brown'], { pitchShift: 0, indexRatio: .65, inputGain: 1 });
-  assert.deepEqual(loaded.feminina, { pitchShift: 7, indexRatio: .55, inputGain: 1 });
+  assert.deepEqual(loaded['mano-brown'], { pitchShift: 0, indexRatio: .15, inputGain: 1 });
+  assert.deepEqual(loaded.feminina, { pitchShift: 8, indexRatio: .15, inputGain: 1 });
+});
+
+test('clarity migration backs up earlier defaults once and preserves custom pitch, gain and index', t => {
+  const { root, library } = fixture(t);
+  const original = { ...library.state, voiceTuningRevision: undefined, voice: 'lula', voiceTuning: {
+    lula: { pitchShift: -3, indexRatio: .65, inputGain: 1.4 },
+    bolsonaro: { pitchShift: 1, indexRatio: .4, inputGain: 1 },
+    feminina: { pitchShift: 8, indexRatio: .55, inputGain: 1 }
+  } };
+  fs.writeFileSync(library.file, JSON.stringify(original));
+  const migrated = new Library(path.join(root, 'data'));
+  assert.equal(migrated.state.voiceTuning.lula.indexRatio, .15);
+  assert.equal(migrated.state.voiceTuning.lula.pitchShift, -3); assert.equal(migrated.state.voiceTuning.lula.inputGain, 1.4);
+  assert.equal(migrated.state.voiceTuning.bolsonaro.indexRatio, .4); assert.equal(migrated.state.voiceTuning.feminina.pitchShift, 8);
+  const backup = fs.readFileSync(`${library.file}.before-clarity-v1`, 'utf8'); assert.deepEqual(JSON.parse(backup), JSON.parse(JSON.stringify(original)));
+  migrated.settings({ voiceTuning: { lula: { indexRatio: .65 }, feminina: { indexRatio: 0 } } });
+  const reopened = new Library(path.join(root, 'data'));
+  assert.equal(reopened.state.voiceTuning.lula.indexRatio, .65); assert.equal(reopened.state.voiceTuning.feminina.indexRatio, 0);
+  assert.equal(fs.readFileSync(`${library.file}.before-clarity-v1`, 'utf8'), backup);
 });
 test('import copies audio; metadata survives restart; delete preserves source', t => {
   const { root, library } = fixture(t); const source = path.join(root, 'efeito.wav'); fs.writeFileSync(source, Buffer.alloc(48, 1));

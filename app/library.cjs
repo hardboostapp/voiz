@@ -26,6 +26,19 @@ class Library {
     this.state.voiceMonitorEnabled = this.state.voiceMonitorEnabled === true;
     this.state.monitorName = String(this.state.monitorName || '').slice(0, 300);
     if (!VOICES.some(v => v.id === this.state.voice)) this.state.voice = 'normal';
+    if (this.state.voiceTuningRevision !== 1) {
+      let backedUp = false;
+      for (const voice of VOICES.filter(v => v.kind === 'rvc')) {
+        const saved = this.state.voiceTuning?.[voice.id];
+        // Replace only the earlier shipped defaults; keep manual adjustments.
+        const earlierDefault = voice.id === 'feminina' ? .55 : .65;
+        if (saved?.indexRatio === earlierDefault) {
+          if (!backedUp && fs.existsSync(this.file)) { fs.copyFileSync(this.file, `${this.file}.before-clarity-v1`); backedUp = true; }
+          saved.indexRatio = .15;
+        }
+      }
+      this.state.voiceTuningRevision = 1;
+    }
     this.state.voiceTuning = Object.fromEntries(VOICES.filter(v => v.kind === 'rvc').map(v => [v.id, normalizeTuning({ ...v.defaultTuning, ...this.state.voiceTuning?.[v.id] })]));
     this.state.sounds = this.state.sounds.filter(s => s && /^[a-f0-9-]{36}$/.test(s.id) && AUDIO.has(s.ext));
   }

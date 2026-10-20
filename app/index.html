@@ -42,12 +42,14 @@
   <aside class="mixer-panel" aria-label="Voz e saída de áudio">
     <div class="mixer-heading"><h2>Sua voz</h2><span id="mic-badge" class="badge">Microfone desligado</span></div>
     <div id="voice-options" class="voice-options" role="group" aria-label="Escolher voz"></div>
+    <p id="resources-status" class="voice-status" role="status" aria-live="polite" hidden></p>
+    <button id="resources-retry" class="text-button" hidden>Concluir instalação das vozes</button>
     <div id="model-info" class="model-info" hidden><span class="local-dot"></span><span id="model-info-text"></span></div>
     <label class="field-label" for="input-device">Microfone de entrada</label><select id="input-device"><option value="">Carregando dispositivos…</option></select>
     <div class="divider"></div>
     <div class="mixer-heading"><h2>Saída</h2><button id="refresh-devices" class="icon-button" title="Atualizar dispositivos" aria-label="Atualizar dispositivos"><svg><use href="#i-refresh"/></svg></button></div>
     <label class="field-label" for="output-device">Voz + sons vão para</label><select id="output-device"><option value="">Escolha a saída</option></select>
-    <div id="cable-help" class="cable-help"><strong>Cabo virtual não encontrado</strong><p>Para enviar o Voiz à call, instale o VB-CABLE e atualize os dispositivos.</p><button id="install-driver" class="text-button">Abrir instalador do VB-CABLE</button></div>
+    <div id="cable-help" class="cable-help"><strong>Cabo virtual não encontrado</strong><p>Clique em instalar e autorize o Windows. Depois da instalação, reinicie o PC.</p><button id="install-driver" class="text-button">Instalar cabo virtual</button><p>VB-CABLE é da VB-Audio e é donationware. <button id="cable-site" class="text-button">Site oficial e apoio ao projeto</button></p></div>
     <p id="routing-help" class="routing-help">Você pode escolher seus fones para testar os sons.</p>
     <button id="mic-toggle" class="mic-toggle"><svg><use href="#i-mic"/></svg><span>Ativar microfone</span></button>
     <p id="voice-status" class="voice-status" aria-live="polite">Seu microfone só abre quando você ativar.</p>
@@ -57,8 +59,8 @@
       <p>Salvo por voz. Mude um ajuste por vez e ative o microfone para ouvir.</p>
       <div class="tuning-field"><label for="voice-pitch">Tom</label><output id="voice-pitch-value">0</output><input id="voice-pitch" type="range" min="-12" max="12" step="1" value="0"></div>
       <p>Menos: mais grave. Mais: mais agudo.</p>
-      <div class="tuning-field"><label for="voice-similarity">Semelhança</label><output id="voice-similarity-value">65%</output><input id="voice-similarity" type="range" min="30" max="85" step="5" value="65"></div>
-      <p>Aumente para reforçar o timbre. Reduza se perder clareza.</p>
+      <div class="tuning-field"><label for="voice-similarity">Influência do modelo</label><output id="voice-similarity-value">15%</output><input id="voice-similarity" type="range" min="0" max="85" step="5" value="15"></div>
+      <p>Reduza se mudar palavras ou sotaque. Aumente para reforçar a voz do modelo.</p>
       <div class="tuning-field"><label for="voice-input-gain">Ganho de entrada</label><output id="voice-input-gain-value">100%</output><input id="voice-input-gain" type="range" min="50" max="400" step="10" value="100"></div>
       <p id="input-level">O nível aparece ao ativar o microfone.</p><button id="reset-voice-tuning" class="text-button">Restaurar ajustes desta voz</button>
     </details>
@@ -67,10 +69,10 @@
       <p>Se o Discord cortar a voz ou os sons, teste desativar a supressão de ruído/Krisp e o controle automático de ganho. Ajuste a sensibilidade para captar a fala inteira.</p>
     </details>
     <details class="audio-help" id="updates-section"><summary>Atualizações do Voiz</summary>
-      <p id="update-version">Versão instalada: 0.4.3</p>
+      <p id="update-version">Versão instalada: 0.4.4</p>
       <p id="update-status" role="status" aria-live="polite">Busque novas versões no GitHub.</p>
       <div class="update-actions"><button id="update-check" class="text-button">Buscar atualização</button><button id="update-download" class="text-button" hidden>Baixar atualização</button><button id="update-install" class="primary" hidden>Reiniciar e atualizar</button></div>
-      <p>A instalação reinicia o Voiz. Seus sons, modelos e ajustes são preservados.</p>
+      <p>A instalação reinicia o Voiz. Seus sons e ajustes são preservados. As vozes fornecidas acompanham a atualização.</p>
       <button id="update-repository" class="text-button">Ver versões no GitHub</button>
     </details>
     <details class="audio-help" id="app-behavior"><summary>Windows e bandeja</summary>
@@ -87,6 +89,6 @@
     <div class="output-caption"><span id="output-status">Aguardando saída</span><span>48 kHz</span></div>
   </aside>
 </main>
-<footer><span class="footer-local"><span class="local-dot"></span>Feito para rodar no seu PC</span><details><summary>Sobre as vozes</summary><p>Imitações por IA, sem vínculo oficial. Lula: Ivan198542, CC BY-NC 4.0 declarada. Bolsonaro: LH6582 / Ivan198542. Mano Brown: vitor007009. Fontes e licenças declaradas em LEIA-ME.md e models/sources.json.</p></details><button id="open-logs" class="quiet">Abrir logs</button><button id="open-updates" class="quiet">Voiz 0.4 · Atualizações</button></footer>
+<footer><span class="footer-local"><span class="local-dot"></span>Feito para rodar no seu PC</span><details><summary>Sobre as vozes</summary><p>Imitações por IA, sem vínculo oficial. Lula: Ivan198542, CC BY-NC 4.0 declarada. Bolsonaro: LH6582 / Ivan198542. Mano Brown: vitor007009. Feminina: Wismut. Atribuições acompanham os modelos em FONTE.txt. VB-CABLE é da VB-Audio e é donationware. <button id="cable-support" class="text-button">Site oficial e apoio à VB-Audio</button></p></details><button id="open-logs" class="quiet">Abrir logs</button><button id="open-updates" class="quiet">Voiz 0.4 · Atualizações</button></footer>
 <script type="module" src="renderer.js"></script>
 </body></html>

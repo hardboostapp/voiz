@@ -16,11 +16,20 @@ function fixture(t) {
   return root;
 }
 class SimulatedEngine extends Engine {
-  constructor(root) { super(root); this.slots = []; this.flushes = 0; }
+  constructor(root) { super(root); this.slots = []; this.flushes = 0; this.params = {}; this.restarts = 0; }
   async start() {}
+  async restart(epoch) { this.assertCurrent(epoch); this.loaded = null; this.restarts++; }
   async json(route, options) {
-    if (options?.method === 'PUT') { if (route.endsWith('/configuration')) { this.slot = JSON.parse(options.body).current_slot_index; this.slots.push(this.slot); } return {}; }
-    if (route.endsWith('/information')) return { local_voice_changer_interface_active: false, voice_changer_information: { slot_index: this.slot, chunk_sec: .4, pipeline_info: { slot_info: { protect_ratio: .33 } } } };
+    if (options?.method === 'PUT') {
+      if (route.endsWith('/configuration')) { this.slot = JSON.parse(options.body).current_slot_index; this.slots.push(this.slot); }
+      else this.params[route.split('/').at(-1)] = JSON.parse(options.body);
+      return {};
+    }
+    if (route.endsWith('/information')) {
+      // Model switches rebuild the pipeline; tuning the same slot does not.
+      if (!this.loaded || this.loaded.slot !== this.slot) this.loaded = { slot: this.slot, params: { ...this.params[this.slot] } };
+      return { local_voice_changer_interface_active: false, voice_changer_information: { slot_index: this.slot, chunk_sec: .4, pipeline_info: { slot_info: this.loaded.params } } };
+    }
     return {};
   }
   async _convert(samples) { this.flushes++; return { samples, ms: 1 }; }
@@ -33,6 +42,40 @@ test('rapid model changes stay serialized and stale voice packets are rejected',
   assert.equal((await engine.convert(new Float32Array(9600), 'mano-brown')).samples.length, 9600);
   const before = engine.flushes; await engine.prepare('mano-brown');
   assert.equal(engine.flushes - before, 6, 'reactivation clears earlier speech');
+});
+
+test('changed tuning reloads a cached pipeline and unchanged tuning does not restart it', async t => {
+  const engine = new SimulatedEngine(fixture(t));
+  await engine.prepare('lula', { pitchShift: 0, indexRatio: .65 });
+  assert.equal(engine.restarts, 0);
+  await engine.prepare('lula', { pitchShift: -2, indexRatio: .3 });
+  assert.equal(engine.restarts, 1); assert.equal(engine.loaded.params.pitch_shift, -2); assert.equal(engine.loaded.params.index_ratio, .3);
+  const before = engine.flushes;
+  await engine.prepare('lula', { pitchShift: -2, indexRatio: .3 });
+  assert.equal(engine.restarts, 1); assert.equal(engine.flushes - before, 0, 'an unused prepared model is clean');
+  await engine.convert(new Float32Array(19200), 'lula');
+  const used = engine.flushes; await engine.prepare('lula', { pitchShift: -2, indexRatio: .3 });
+  assert.equal(engine.flushes - used, 6, 'earlier speech must be flushed');
+});
+
+test('activation reuses preparation in flight and a clean warmed model', async t => {
+  const engine = new SimulatedEngine(fixture(t)); let release, starts = 0;
+  engine.start = () => { starts++; return new Promise(resolve => { release = resolve; }); };
+  const warm = engine.warm('lula');
+  const activate = engine.prepare('lula'); assert.equal(warm, activate);
+  while (!release) await new Promise(resolve => setImmediate(resolve)); release(); await Promise.all([warm, activate]);
+  assert.equal(starts, 1); const conversions = engine.flushes;
+  await engine.warm('lula'); assert.equal(engine.flushes, conversions);
+  engine.start = async () => { starts++; }; await engine.prepare('lula');
+  assert.equal(engine.flushes, conversions, 'activation must not convert silent blocks again');
+});
+
+test('a pipeline that ignores tuning after reload cannot report ready or accept speech', async t => {
+  const engine = new SimulatedEngine(fixture(t)); await engine.prepare('lula');
+  engine.restart = async () => { engine.restarts++; };
+  await assert.rejects(engine.prepare('lula', { pitchShift: 4 }), /não aplicou/);
+  assert.equal(engine.restarts, 1); assert.equal(engine.ready, false);
+  await assert.rejects(engine.convert(new Float32Array(19200), 'lula'), /Prepare o motor/);
 });
 test('stop during preparation cannot announce readiness or switch a queued model', async t => {
   const engine = new SimulatedEngine(fixture(t)); let release;

@@ -10,7 +10,10 @@ contextBridge.exposeInMainWorld('voiz', {
   startupState: () => ipcRenderer.invoke('startup-state'), setStartup: enabled => ipcRenderer.invoke('startup-set', enabled),
   arm: () => ipcRenderer.invoke('mic-arm'), disarm: () => ipcRenderer.invoke('mic-disarm'),
   prepare: (voice, tuning) => ipcRenderer.invoke('engine-prepare', voice, tuning), convert: (samples, voice) => ipcRenderer.invoke('engine-convert', samples, voice),
+  warm: (voice, tuning) => ipcRenderer.invoke('engine-warm', voice, tuning),
+  resourcesState: () => ipcRenderer.invoke('resources-state'), syncResources: () => ipcRenderer.invoke('resources-sync'), onResources: listen('resources-status'),
   driver: () => ipcRenderer.invoke('driver'), logs: () => ipcRenderer.invoke('logs'),
+  cableSite: () => ipcRenderer.invoke('cable-site'),
   updateState: () => ipcRenderer.invoke('update-state'), checkUpdate: () => ipcRenderer.invoke('update-check'), downloadUpdate: () => ipcRenderer.invoke('update-download'), installUpdate: () => ipcRenderer.invoke('update-install'), updateRepository: () => ipcRenderer.invoke('update-repository'),
   onShortcut: listen('shortcut'), onEngine: listen('engine-status'), onUpdate: listen('update-status')
 });

@@ -1,6 +1,6 @@
 @echo off
 setlocal
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup\Install-AI.ps1" -Root "%~dp0."
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup\Install-Resources.ps1" -Root "%~dp0."
 if errorlevel 1 (
   echo Nao foi possivel concluir. Confira os logs na pasta logs.
   pause
