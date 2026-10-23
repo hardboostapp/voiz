@@ -60,15 +60,16 @@ Section "Voiz: soundboard e voz natural" Base
     FileClose $0
   ${EndIf}
   SetOutPath "$INSTDIR"
+  File "${LAUNCHER}"
   File "${SOURCE}\setup\Preparar vozes.cmd"
   File "${SOURCE}\setup\LEIA-ANTES.txt"
   WriteUninstaller "$INSTDIR\Desinstalar Voiz.exe"
   SetOutPath "$INSTDIR\drivers"
   File /r "${CABLE}\*"
   ${If} $NoIntegration != "1"
-  CreateShortCut "$DESKTOP\Voiz.lnk" "$INSTDIR\runtime\electron.exe" '$\"$INSTDIR\app$\"' "$INSTDIR\app\icon.ico"
+  CreateShortCut "$DESKTOP\Voiz.lnk" "$INSTDIR\Voiz.exe" "" "$INSTDIR\app\icon.ico"
   CreateDirectory "$SMPROGRAMS\Voiz"
-  CreateShortCut "$SMPROGRAMS\Voiz\Voiz.lnk" "$INSTDIR\runtime\electron.exe" '$\"$INSTDIR\app$\"' "$INSTDIR\app\icon.ico"
+  CreateShortCut "$SMPROGRAMS\Voiz\Voiz.lnk" "$INSTDIR\Voiz.exe" "" "$INSTDIR\app\icon.ico"
   CreateShortCut "$SMPROGRAMS\Voiz\Preparar vozes.lnk" "$INSTDIR\Preparar vozes.cmd"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Voiz" "DisplayName" "Voiz"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Voiz" "DisplayVersion" "${VERSION}"
@@ -110,7 +111,7 @@ Section "Cabo virtual VB-CABLE (VB-Audio, donationware)" CableSection
   skip_cable:
 SectionEnd
 Function LaunchVoiz
-  Exec '$\"$INSTDIR\runtime\electron.exe$\" $\"$INSTDIR\app$\"'
+  Exec '$\"$INSTDIR\Voiz.exe$\"'
 FunctionEnd
 Section "Uninstall"
   SetShellVarContext current
@@ -132,6 +133,7 @@ Section "Uninstall"
   skip_unintegration:
   RMDir /r "$INSTDIR\app"
   RMDir /r "$INSTDIR\runtime"
+  Delete "$INSTDIR\Voiz.exe"
   RMDir /r "$INSTDIR\setup"
   RMDir /r "$INSTDIR\drivers"
   RMDir /r "$INSTDIR\engine-runtime"

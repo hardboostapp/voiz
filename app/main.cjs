@@ -9,6 +9,7 @@ const { Resources } = require('./resources.cjs');
 const { voiceCatalog } = require('./voices.cjs');
 const { Updater, REPOSITORY } = require('./updater.cjs');
 const { createStartup } = require('./startup.cjs');
+const { prepareLauncher } = require('./launcher.cjs');
 const { createTray, closeToTray } = require('./tray.cjs');
 const { driverExecutable } = require('./installation.cjs');
 const { version } = require('./package.json');
@@ -16,6 +17,7 @@ const root = path.resolve(__dirname, '..');
 const testRoot = process.env.VOIZ_TEST_DATA;
 app.setPath('userData', path.join(testRoot || root, 'electron-profile'));
 app.setName('Voiz');
+if (process.platform === 'win32') app.setAppUserModelId('hardboostapp.voiz');
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 let window, library, engine, resources, updater, tray, startup, installingUpdate = false, micArmedUntil = 0, registrations = [], quitting = false, exitRequested = false;
 const startInTray = process.argv.includes('--voiz-background');
@@ -55,6 +57,16 @@ else {
     const ensureResources = () => testRoot ? Promise.resolve() : resources.status.state === 'ready' ? Promise.resolve() : resources.sync();
     updater = new Updater(testRoot || root, version, value => send('update-status', value));
     startup = createStartup(app, process.execPath, __dirname, !!testRoot);
+    if (!testRoot && process.platform === 'win32') {
+      try {
+        const launcher = prepareLauncher(root, process.execPath);
+        startup = createStartup(app, process.execPath, __dirname, false, launcher);
+        startup.migrate();
+      } catch (error) {
+        fs.mkdirSync(path.join(root, 'logs'), { recursive: true });
+        fs.appendFileSync(path.join(root, 'logs/launcher.log'), `${new Date().toISOString()} ${error.message}\n`);
+      }
+    }
     session.defaultSession.setPermissionCheckHandler((wc, permission) => wc === window?.webContents && ['media', 'speaker-selection'].includes(permission));
     session.defaultSession.setPermissionRequestHandler((wc, permission, callback, details) => {
       const local = wc === window?.webContents;

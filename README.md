@@ -28,6 +28,8 @@ No Soundboard, mantenha **Ouvir meus sons** ligado e escolha o fone em **Ouvir e
 
 Em **Windows e bandeja**, marque **Iniciar com o Windows** para abrir o Voiz na bandeja ao entrar na sua conta. O microfone começa desligado. O botão **X** recolhe a janela e mantém o áudio e os atalhos funcionando. Para encerrar, clique com o botão direito no ícone da bandeja e escolha **Sair do Voiz**; esse menu também oferece **Parar tudo**.
 
+Desde a versão 0.4.6, a inicialização usa **Voiz.exe**, um iniciador de 12 KB com nome e ícone próprios, em vez de mostrar a identidade genérica do Electron no Windows. Entradas antigas são migradas mantendo a preferência de iniciar ou permanecer desativado. O runtime existente é reaproveitado. Se a lista de inicialização estiver aberta durante a migração, feche e reabra essa página para atualizá-la.
+
 A reprodução da voz de IA começa com reserva de 100 ms e aumenta até 200 ms se faltar áudio convertido. Isso reduz a espera inicial em 100 ms em relação à versão 0.4.1; a latência total também inclui captura, conversão, dispositivos e aplicativo da chamada.
 
 Escolher uma voz já inicia sua preparação em segundo plano, mantendo o microfone desligado. Ao ativar a mesma voz, o aplicativo reaproveita essa preparação. O motor usa uma única cópia persistente de suas bibliotecas, de aproximadamente 959 MiB, e seu cliente auxiliar permanece sem janela. Os padrões de influência do modelo e proteção de consoantes foram ajustados para reduzir trocas de palavras e artefatos. A conversão ainda pode alterar pronúncia e timbre. A opção **Feminina** usa o modelo comunitário **Nilce Moretto**, com ajuste de tom em **Ajustar voz**; a equivalência exata com demonstrações de outros serviços não foi confirmada.

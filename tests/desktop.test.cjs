@@ -36,3 +36,18 @@ test('UI test startup operations never change Windows settings', () => {
   const startup=createStartup({setLoginItemSettings:()=>{throw Error('must not run');}},'unused','unused',true);
   assert.equal(startup.set(true).enabled,true);assert.equal(startup.set(false).enabled,false);
 });
+test('branded startup migration keeps one Voiz entry and preserves Windows disabling it', {skip:process.platform!=='win32'}, () => {
+  const path=require('node:path'),runtime='C:/shared/electron.exe',launcher='C:/my apps/Voiz/Voiz.exe',appDir=path.resolve('C:/my apps/Voiz/app');
+  for(const enabled of [true,false]){
+    let saved={name:'Voiz',path:runtime,args:[appDir,'--voiz-background'],openAtLogin:true,enabled};let writes=0;
+    const app={getLoginItemSettings:options=>({launchItems:options.path===`"${saved.path}"`?[{name:saved.name,scope:'user',enabled:saved.enabled,args:saved.args.filter(a=>!a.startsWith('--'))}]:[]}),setLoginItemSettings:options=>{saved=options;writes++;}};
+    const startup=createStartup(app,runtime,appDir,false,launcher);
+    assert.deepEqual(startup.migrate(),{enabled,registered:true,supported:true});
+    assert.equal(saved.path,launcher);assert.deepEqual(saved.args,['--voiz-background']);assert.equal(saved.openAtLogin,true);
+    startup.migrate();assert.equal(writes,1,'migration is one-time and does not re-enable a disabled entry');
+  }
+});
+test('branded migration does not enable startup when Voiz was never registered', {skip:process.platform!=='win32'}, () => {
+  const app={getLoginItemSettings:()=>({launchItems:[]}),setLoginItemSettings:()=>{throw Error('must not opt in');}};
+  assert.deepEqual(createStartup(app,'C:/shared/electron.exe','C:/Voiz/app',false,'C:/Voiz/Voiz.exe').migrate(),{enabled:false,registered:false,supported:true});
+});

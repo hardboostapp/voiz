@@ -5,9 +5,11 @@ $voizTarget=Join-Path $voizTemp ('voiz-install-'+[guid]::NewGuid().ToString('N')
 if (-not ([IO.Path]::GetFullPath($voizTarget).StartsWith($voizTemp+'\',[StringComparison]::OrdinalIgnoreCase))) { throw 'Unexpected test target.' }
 $voizInstall=Start-Process -FilePath (Resolve-Path -LiteralPath $Installer) -ArgumentList "/S /NOINTEGRATION=1 /D=$voizTarget" -WindowStyle Hidden -PassThru -Wait
 if ($voizInstall.ExitCode -ne 0) { throw 'Installer failed.' }
-foreach ($voizFile in @('setup\no-integration','app\main.cjs','runtime\electron.exe','Preparar vozes.cmd')) {
+foreach ($voizFile in @('setup\no-integration','app\main.cjs','runtime\electron.exe','Voiz.exe','Preparar vozes.cmd')) {
   if (-not (Test-Path -LiteralPath (Join-Path $voizTarget $voizFile))) { throw "Missing installed file: $voizFile" }
 }
+$voizIdentity=[Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $voizTarget 'Voiz.exe'))
+if($voizIdentity.FileDescription -ne 'Voiz' -or $voizIdentity.ProductName -ne 'Voiz'){throw 'Launcher lost the Voiz Windows identity.'}
 $voizNodeMode=$env:ELECTRON_RUN_AS_NODE
 try {
   $env:ELECTRON_RUN_AS_NODE='1'

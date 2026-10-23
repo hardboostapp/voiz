@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 const REPOSITORY = 'hardboostapp/voiz';
 const MAX_BYTES = 8 * 1024 * 1024;
-const REQUIRED = ['package.json', 'main.cjs', 'preload.cjs', 'index.html', 'renderer.js', 'style.css', 'updater.cjs', 'update-install.ps1', 'audio.js', 'audio-worklet.js', 'audio-profile.cjs', 'conversion-queue.mjs', 'engine.cjs', 'library.cjs', 'voices.cjs', 'startup.cjs', 'tray.cjs', 'installation.cjs'];
+const REQUIRED = ['package.json', 'main.cjs', 'preload.cjs', 'index.html', 'renderer.js', 'style.css', 'updater.cjs', 'update-install.ps1', 'audio.js', 'audio-worklet.js', 'audio-profile.cjs', 'conversion-queue.mjs', 'engine.cjs', 'library.cjs', 'voices.cjs', 'startup.cjs', 'launcher.cjs', 'launcher.json', 'tray.cjs', 'installation.cjs'];
 function versionParts(version) {
   if (typeof version !== 'string' || !/^\d{1,6}\.\d{1,6}\.\d{1,6}$/.test(version)) throw new Error('A versão publicada é inválida.');
   return version.split('.').map(Number);
