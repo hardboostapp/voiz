@@ -2,7 +2,9 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const {prepareLauncher}=require('../app/launcher.cjs'),manifest=require('../app/launcher.json');
 const digest=b=>crypto.createHash('sha256').update(b).digest('hex');
 test('launcher payload matches its reviewed source and icon',()=>{
-  assert.equal(manifest.sourceSha256,digest(fs.readFileSync(path.join(__dirname,'../setup/VoizLauncher.cs'))));
+  const source=fs.readFileSync(path.join(__dirname,'../setup/VoizLauncher.cs'),'utf8').replace(/\r\n/g,'\n');
+  assert.equal(manifest.sourceSha256,digest(source));
+  assert.equal(manifest.sourceSha256,digest(source.replace(/\n/g,'\r\n').replace(/\r\n/g,'\n')));
   assert.equal(manifest.iconSha256,digest(fs.readFileSync(path.join(__dirname,'../app/icon.ico'))));
   const bytes=Buffer.from(manifest.content,'base64');assert.equal(digest(bytes),manifest.sha256);assert.equal(bytes.length,manifest.bytes);assert.equal(bytes.toString('ascii',0,2),'MZ');assert.ok(bytes.length<100*1024);
 });

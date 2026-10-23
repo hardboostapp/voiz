@@ -6,7 +6,8 @@ function compileLauncher(destination){
 }
 if(require.main===module){
   const stage=fs.mkdtempSync(path.join(os.tmpdir(),'voiz-launcher-build-')),bytes=compileLauncher(path.join(stage,'Voiz.exe'));
-  const source=fs.readFileSync(path.join(root,'setup/VoizLauncher.cs')),icon=fs.readFileSync(path.join(root,'app/icon.ico'));
+  // Git checkouts may use LF or CRLF; source identity must survive either form.
+  const source=fs.readFileSync(path.join(root,'setup/VoizLauncher.cs'),'utf8').replace(/\r\n/g,'\n'),icon=fs.readFileSync(path.join(root,'app/icon.ico'));
   const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
   const manifest={schema:1,filename:'Voiz.exe',bytes:bytes.length,sha256:hash(bytes),sourceSha256:hash(source),iconSha256:hash(icon),content:bytes.toString('base64')};
   fs.writeFileSync(path.join(root,'app/launcher.json'),JSON.stringify(manifest,null,2));
