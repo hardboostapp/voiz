@@ -1,6 +1,17 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),{execFileSync}=require('node:child_process');
-const {prepareLauncher}=require('../app/launcher.cjs'),manifest=require('../app/launcher.json');
+const {prepareLauncher,repairShortcuts}=require('../app/launcher.cjs'),manifest=require('../app/launcher.json');
 const digest=b=>crypto.createHash('sha256').update(b).digest('hex');
+test('shortcut repair updates only Voiz links and does not recreate removed shortcuts',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'voiz-shortcut-test-')),desktop=path.join(root,'desktop'),appData=path.join(root,'profile'),runtime=path.join(root,'shared/electron.exe');
+  fs.mkdirSync(desktop,{recursive:true});const link=path.join(desktop,'Voiz.lnk');fs.writeFileSync(link,'fixture');
+  const records=new Map([[link,{target:runtime,args:`"${path.join(root,'app')}"`,icon:'old.ico'}]]),updates=[];
+  const shell={readShortcutLink:file=>records.get(file),writeShortcutLink:(file,operation,value)=>{updates.push({file,operation,value});records.set(file,{...records.get(file),...value});return true;}};
+  const input={shell,root,runtime,desktop,appData};
+  assert.deepEqual(repairShortcuts(input),[link]);assert.equal(updates[0].operation,'update');assert.equal(updates[0].value.target,path.join(root,'Voiz.exe'));assert.equal(updates[0].value.appUserModelId,'hardboostapp.voiz');assert.equal(updates[0].value.args,'');
+  assert.deepEqual(repairShortcuts(input),[]);
+  records.set(link,{target:runtime,args:`"${path.join(root,'another-app')}"`});assert.deepEqual(repairShortcuts(input),[]);assert.equal(updates.length,1);
+  fs.unlinkSync(link);assert.deepEqual(repairShortcuts(input),[]);
+});
 test('launcher payload matches its reviewed source and icon',()=>{
   const source=fs.readFileSync(path.join(__dirname,'../setup/VoizLauncher.cs'),'utf8').replace(/\r\n/g,'\n');
   assert.equal(manifest.sourceSha256,digest(source));

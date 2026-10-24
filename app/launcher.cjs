@@ -17,4 +17,22 @@ function prepareLauncher(root,runtime){
   if(!fs.existsSync(setting)||fs.readFileSync(setting,'utf8')!==value)fs.writeFileSync(setting,value);
   return executable;
 }
-module.exports={prepareLauncher};
+function repairShortcuts({shell,root,runtime,desktop,appData}){
+  const launcher=path.join(root,'Voiz.exe'),appDir=path.join(root,'app');
+  const options={target:launcher,cwd:root,args:'',description:'Voiz',icon:path.join(appDir,'icon.ico'),iconIndex:0,appUserModelId:'hardboostapp.voiz'};
+  const programs=path.join(appData,'Microsoft/Windows/Start Menu/Programs');
+  const candidates=[path.join(desktop,'Voiz.lnk'),path.join(programs,'Voiz.lnk'),path.join(programs,'Voiz/Voiz.lnk')];
+  const changed=[];
+  const samePath=(a,b)=>typeof a==='string'&&path.resolve(a).toLowerCase()===path.resolve(b).toLowerCase();
+  for(const file of candidates){
+    if(!fs.existsSync(file)||fs.lstatSync(file).isSymbolicLink())continue;
+    const current=shell.readShortcutLink(file);
+    const legacy=samePath(current.target,runtime)&&[appDir,`"${appDir}"`].includes(current.args?.trim());
+    if(!samePath(current.target,launcher)&&!legacy)continue;
+    if(Object.entries(options).every(([key,value])=>current[key]===value))continue;
+    if(!shell.writeShortcutLink(file,'update',options))throw Error('Nao foi possivel atualizar o atalho do Voiz.');
+    changed.push(file);
+  }
+  return changed;
+}
+module.exports={prepareLauncher,repairShortcuts};

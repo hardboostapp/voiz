@@ -1,10 +1,16 @@
 import { AudioMixer } from './audio.js';
+import { WINDOWS_MONITOR, isMonitorOutput, windowsMonitor } from './monitor-output.mjs';
+import { createAutoUpdate } from './auto-update.mjs';
 const $ = id => document.getElementById(id);
 const api = window.voiz;
 let state, voices = [], devices = [], favoriteOnly = false, selected = null, playing = [], busy = false, meterTimer;
 let warmingVoice = '', preparedVoice = '', warmGeneration = 0;
 let resourcesStatus = { state: 'idle' };
+let systemMonitor = { deviceId: '', blocked: false };
+let shortcutEditing = null;
 const mixer = new AudioMixer(api, onAudio);
+for(const id of ['updates-section','app-behavior','call-help','voices-about','open-logs'])$('settings-content').append($(id));
+const autoCheckUpdates=createAutoUpdate({snapshot:()=>api.updateState(),check:()=>api.checkUpdate(),render:renderUpdate});
 function icon(name) { const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const use = document.createElementNS(svg.namespaceURI, 'use'); use.setAttribute('href', `#i-${name}`); svg.append(use); return svg; }
 function notice(text) { $('notice-text').textContent = text.replace(/^Error invoking remote method '[^']+': (?:Error: )?/, ''); $('notice').hidden = false; }
 function fail(error) { notice(error.message || String(error)); }
@@ -68,27 +74,35 @@ async function renderResources(value) {
   for (const entry of voices) { const button = $('voice-' + entry.id); button.classList.toggle('selected', entry.id === state.voice); button.setAttribute('aria-pressed', String(entry.id === state.voice)); }
 }
 function isCableOutput(device) { return device?.kind === 'audiooutput' && /(?:cable input|(?:alto-falantes|speakers).*VB-Audio Virtual Cable)/i.test(device.label); }
-function isMonitorOutput(device) { return device.kind === 'audiooutput' && !/VB-Audio|Voicemeeter|virtual|CABLE (?:Input|Output)/i.test(device.label); }
 function monitorStatus() {
   const target = $('monitor-device').value;
+  const followsWindows = target === WINDOWS_MONITOR;
+  const sameOutput = !!outputId() && (target === outputId() || (followsWindows && systemMonitor.deviceId === outputId()));
+  const blocked = followsWindows && systemMonitor.blocked;
+  const defaultHelp = 'Usa a saída padrão do Windows e acompanha suas trocas de fone.';
+  const blockedHelp = 'A saída padrão do Windows é virtual. Escolha seu fone no Windows ou nesta lista.';
+  $('sound-send-enabled').checked = state.soundSendEnabled;
+  $('sound-send-status').textContent = state.soundSendEnabled ? 'Os efeitos também são enviados para a saída da call.' : state.monitorEnabled ? 'Prévia só para você. Os efeitos não são enviados para a call.' : 'Efeitos silenciados na call e no seu fone.';
   $('monitor-enabled').checked = state.monitorEnabled;
   $('monitor-device').disabled = !state.monitorEnabled && !state.voiceMonitorEnabled;
-  $('monitor-status').textContent = target && target === outputId() ? 'Você já ouve os sons pela saída principal.' : !state.monitorEnabled ? 'Retorno dos sons desligado.' : !target ? 'Escolha seu fone para ouvir os sons por clique ou atalho.' : mixer.monitorError || 'Sons por clique ou atalho também tocam no seu fone.';
+  $('monitor-status').textContent = !state.monitorEnabled ? 'Retorno dos sons desligado.' : blocked ? blockedHelp : sameOutput && state.soundSendEnabled ? 'Você já ouve os sons pela saída principal.' : !target ? 'Escolha seu fone para ouvir os sons por clique ou atalho.' : mixer.monitorError || (followsWindows ? defaultHelp : 'Sons por clique ou atalho também tocam no seu fone.');
   $('voice-monitor-enabled').checked = state.voiceMonitorEnabled;
-  $('voice-monitor-status').textContent = outputId() && target === outputId() ? 'Sua voz já sai neste fone pela saída principal.' : !state.voiceMonitorEnabled ? 'Escute a voz escolhida no mesmo fone de “Ouvir em”.' : !target ? 'Escolha seu fone em “Ouvir em”, no Soundboard.' : mixer.monitorError || (mixer.active ? mixer.monitorVoiceSource ? 'Você está ouvindo a voz escolhida no seu fone.' : 'Retorno da voz indisponível. Escolha seu fone em “Ouvir em”.' : 'Ative o microfone para ouvir a voz escolhida no fone.');
+  $('voice-monitor-status').textContent = !state.voiceMonitorEnabled ? 'Escute a voz escolhida no mesmo fone de “Ouvir em”.' : blocked ? blockedHelp : sameOutput ? 'Sua voz já sai neste fone pela saída principal.' : !target ? 'Escolha seu fone em “Ouvir em”, no Soundboard.' : mixer.monitorError || (mixer.active ? mixer.monitorVoiceSource ? 'Você está ouvindo a voz escolhida no seu fone.' : 'Retorno da voz indisponível. Escolha seu fone em “Ouvir em”.' : 'Ative o microfone para ouvir a voz escolhida no fone.');
 }
 async function applyMonitor() {
-  await mixer.setMonitor({ enabled: state.monitorEnabled, voiceEnabled: state.voiceMonitorEnabled, outputId: $('monitor-device').value });
+  const target = $('monitor-device').value;
+  await mixer.setMonitor({ enabled: state.monitorEnabled, voiceEnabled: state.voiceMonitorEnabled, outputId: target === WINDOWS_MONITOR && systemMonitor.blocked ? '' : target, resolvedOutputId: target === WINDOWS_MONITOR ? systemMonitor.deviceId : '' });
   monitorStatus();
 }
 async function refreshMonitorDevices() {
   const select = $('monitor-device'), old = select.value;
   const outputs = devices.filter(isMonitorOutput);
   select.replaceChildren(new Option('Escolha seu fone', ''));
+  select.add(new Option('Padrão do Windows', WINDOWS_MONITOR));
   for (const device of outputs) select.add(new Option(device.label || `Saída ${select.options.length}`, device.deviceId));
-  const found = outputs.find(d => d.label === state.monitorName) || (!state.monitorName && (outputs.find(d => /fone|headphone|headset|realtek/i.test(d.label)) || outputs[0]));
-  if (found) select.value = found.deviceId;
-  if (found && !state.monitorName) { state.monitorName = found.label; await api.settings({ monitorName: found.label }); }
+  const found = outputs.find(d => d.label === state.monitorName);
+  if (state.monitorMode === 'windows') select.value = WINDOWS_MONITOR;
+  else if (found) select.value = found.deviceId;
   await applyMonitor();
   if (old && !select.value && (state.monitorEnabled || state.voiceMonitorEnabled)) notice('Seu dispositivo de retorno foi desconectado. Escolha outro fone em Ouvir em, no Soundboard.');
 }
@@ -114,12 +128,43 @@ function renderSounds() {
     fav.dataset.sound = sound.id; fav.dataset.action = 'favorite';
     const edit = document.createElement('button'); edit.append(icon('sliders')); edit.setAttribute('aria-label', `Editar ${sound.name}`); edit.onclick = () => editSound(sound.id);
     edit.dataset.sound = sound.id; edit.dataset.action = 'edit';
-    actions.append(fav, edit); card.append(actions); $('sound-grid').append(card);
+    const shortcut = document.createElement('button'); shortcut.append(icon('keyboard')); shortcut.classList.toggle('shortcut-set',!!sound.shortcut); shortcut.setAttribute('aria-label',`${sound.shortcut ? 'Alterar' : 'Adicionar'} atalho de ${sound.name}`); shortcut.title=sound.shortcut ? `Alterar atalho: ${sound.shortcut.replace('CommandOrControl','Ctrl')}` : 'Adicionar atalho'; shortcut.dataset.sound=sound.id;shortcut.dataset.action='shortcut';shortcut.onclick=()=>{shortcutEditing=sound.id;renderSounds();findSoundControl(sound.id,'shortcut-capture')?.focus();};
+    actions.append(fav, shortcut, edit); card.append(actions);
+    if(shortcutEditing===sound.id)card.append(shortcutEditor(sound));
+    $('sound-grid').append(card);
   }
   $('playing-count').textContent = playing.length ? `${playing.length} tocando` : '';
   if (restore) (findSoundControl(restore.id, restore.action) || $('all-tab')).focus({ preventScroll: true });
 }
-function findSoundControl(id, action) { return [...$('sound-grid').querySelectorAll('button')].find(el => el.dataset.sound === id && el.dataset.action === action); }
+function shortcutFromKey(event) {
+  if (['Control','Alt','Shift','Meta'].includes(event.key)) return null;
+  const parts=[];if(event.ctrlKey)parts.push('Ctrl');if(event.altKey)parts.push('Alt');if(event.shiftKey)parts.push('Shift');
+  const key=event.code==='Space'?'Space':event.code.startsWith('Key')?event.code.slice(3):event.code.startsWith('Digit')?event.code.slice(5):event.key.toUpperCase();
+  if(!parts.length||!/^(?:[A-Z0-9]|F(?:[1-9]|1[0-9]|2[0-4])|Space)$/.test(key))throw Error('Combine Ctrl, Alt ou Shift com uma letra, número ou tecla F.');
+  return [...parts,key].join('+');
+}
+function shortcutEditor(sound) {
+  const editor=document.createElement('div');editor.className='shortcut-editor';
+  const label=document.createElement('label');label.textContent='Atalho deste som';label.htmlFor='quick-shortcut';
+  const input=document.createElement('input');input.id='quick-shortcut';input.readOnly=true;input.placeholder='Pressione as teclas';input.dataset.sound=sound.id;input.dataset.action='shortcut-capture';input.setAttribute('aria-describedby','quick-shortcut-help');
+  const help=document.createElement('p');help.id='quick-shortcut-help';help.textContent='Ctrl, Alt ou Shift + uma tecla. Salva ao pressionar.';
+  const error=document.createElement('p');error.className='shortcut-error';error.setAttribute('role','alert');error.hidden=true;
+  const actions=document.createElement('div');actions.className='shortcut-actions';
+  const cancel=document.createElement('button');cancel.className='quiet';cancel.textContent='Cancelar';cancel.onclick=()=>finish();actions.append(cancel);
+  function finish(){shortcutEditing=null;renderSounds();findSoundControl(sound.id,'shortcut')?.focus();}
+  let saving=false;
+  async function save(value){if(saving)return;saving=true;input.disabled=true;try{state=await api.update(sound.id,{shortcut:value.replace(/^Ctrl(?=\+)/,'CommandOrControl')});finish();checkShortcuts();}catch(e){error.hidden=false;error.textContent=e.message||String(e);input.disabled=false;input.focus();}finally{saving=false;}}
+  input.onkeydown=event=>{
+    if(event.key==='Tab')return;
+    event.preventDefault();event.stopPropagation();
+    if(event.key==='Escape'){finish();return;}
+    if(['Backspace','Delete'].includes(event.key)){void save('');return;}
+    try{const value=shortcutFromKey(event);if(value)void save(value);}catch(e){error.hidden=false;error.textContent=e.message;}
+  };
+  if(sound.shortcut){const clear=document.createElement('button');clear.className='quiet';clear.textContent='Remover atalho';clear.onclick=()=>{void save('');};actions.append(clear);}
+  editor.append(label,input,help,error,actions);return editor;
+}
+function findSoundControl(id, action) { return [...$('sound-grid').querySelectorAll('button, input')].find(el => el.dataset.sound === id && el.dataset.action === action); }
 function closeEditor() { const id = selected; $('sound-editor').hidden = true; selected = null; (findSoundControl(id, 'edit') || $('all-tab')).focus({ preventScroll: true }); }
 function renderCategories() {
   const previous = $('category').value; const categories = [...new Set(state.sounds.map(s => s.category))].sort();
@@ -134,7 +179,9 @@ function editSound(id) {
   $('edit-name').value = sound.name; $('edit-category').value = sound.category; $('edit-shortcut').value = sound.shortcut.replace('CommandOrControl', 'Ctrl'); $('edit-volume').value = sound.volume * 100; $('editor-error').textContent = ''; $('delete-sound').textContent = 'Remover som'; $('delete-sound').dataset.confirm = ''; $('edit-name').focus(); $('sound-editor').scrollIntoView({ block: 'nearest' });
 }
 async function refreshDevices() {
-  devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.deviceId && !['default', 'communications'].includes(d.deviceId));
+  const enumerated = await navigator.mediaDevices.enumerateDevices();
+  systemMonitor = windowsMonitor(enumerated);
+  devices = enumerated.filter(d => d.deviceId && !['default', 'communications'].includes(d.deviceId));
   const oldInput = $('input-device').value, oldOutput = $('output-device').value;
   for (const [element, kind, stored, old] of [['input-device', 'audioinput', state.inputName, oldInput], ['output-device', 'audiooutput', state.outputName, oldOutput]]) {
     const select = $(element); select.replaceChildren(new Option(kind === 'audioinput' ? 'Escolha seu microfone' : 'Escolha a saída', ''));
@@ -206,9 +253,16 @@ function renderUpdate(update) {
   $('update-download').textContent = `Baixar Voiz ${update.version || ''}`;
   $('update-install').hidden = !['ready', 'installing'].includes(update.status);
   $('update-install').disabled = update.status === 'installing';
-  $('open-updates').textContent = update.status === 'available' || update.status === 'ready' ? 'Atualização disponível' : `Voiz ${update.currentVersion} · Atualizações`;
+  const available=['available','ready'].includes(update.status);
+  $('settings-update-dot').hidden=!available;
+  $('open-settings').setAttribute('aria-label',available?'Configurações: atualização disponível':'Configurações');
+  $('open-settings').title=available?'Configurações: atualização disponível':'Configurações';
+  $('updates-section').querySelector('summary').textContent=available?'Atualizações · versão nova disponível':'Atualizações do Voiz';
 }
-$('open-updates').onclick = () => { $('updates-section').open = true; $('updates-section').scrollIntoView({ block: 'nearest' }); $('update-check').hidden ? ($('update-install').hidden ? $('update-download') : $('update-install')).focus() : $('update-check').focus(); };
+$('open-settings').onclick=()=>{$('settings-dialog').showModal();if(!$('settings-update-dot').hidden)$('updates-section').open=true;};
+$('close-settings').onclick=()=>{$('settings-dialog').close();};
+$('settings-dialog').addEventListener('close',()=>{$('open-settings').focus();});
+api.onCheckUpdates(()=>{void autoCheckUpdates();});
 $('update-check').onclick = run(async () => renderUpdate(await api.checkUpdate()));
 $('update-download').onclick = run(async () => renderUpdate(await api.downloadUpdate()));
 $('update-install').onclick = run(async () => { stopAll(); await api.installUpdate(); });
@@ -242,8 +296,9 @@ for (const id of ['input-device', 'output-device']) $(id).onchange = run(async (
   state[key] = label; await api.settings({ [key]: label }); routing(); await applyMonitor();
 });
 $('monitor-enabled').onchange = run(async () => { state.monitorEnabled = $('monitor-enabled').checked; await api.settings({ monitorEnabled: state.monitorEnabled }); await applyMonitor(); });
+$('sound-send-enabled').onchange = run(async () => { const control=$('sound-send-enabled'),enabled=control.checked;control.disabled=true;try{if(!enabled)await mixer.setSoundSend(false);const saved=await api.settings({soundSendEnabled:enabled});state.soundSendEnabled=saved.soundSendEnabled;if(enabled)await mixer.setSoundSend(true);}finally{control.disabled=false;monitorStatus();} });
 $('voice-monitor-enabled').onchange = run(async () => { state.voiceMonitorEnabled = $('voice-monitor-enabled').checked; await api.settings({ voiceMonitorEnabled: state.voiceMonitorEnabled }); await applyMonitor(); });
-$('monitor-device').onchange = run(async () => { state.monitorName = devices.find(d => d.deviceId === $('monitor-device').value)?.label || ''; await api.settings({ monitorName: state.monitorName }); await applyMonitor(); });
+$('monitor-device').onchange = run(async () => { state.monitorMode = $('monitor-device').value === WINDOWS_MONITOR ? 'windows' : 'device'; state.monitorName = devices.find(d => d.deviceId === $('monitor-device').value)?.label || ''; await api.settings({ monitorMode: state.monitorMode, monitorName: state.monitorName }); await applyMonitor(); });
 for (const [id, key] of [['mic-volume', 'micVolume'], ['sound-volume', 'soundVolume'], ['master-volume', 'masterVolume']]) {
   $(id).oninput = () => { state[key] = Number($(id).value) / 100; $(id + '-value').value = `${$(id).value}%`; mixer.setVolumes({ [key]: state[key] }); };
   $(id).onchange = run(() => api.settings({ [key]: state[key] }));
@@ -270,13 +325,14 @@ $('cable-support').onclick = run(() => api.cableSite());
 $('resources-retry').onclick = run(async () => { stopAll(); await api.syncResources(); });
 api.onResources(value => { void renderResources(value).catch(fail); });
 $('open-logs').onclick = run(() => api.logs()); $('dismiss-notice').onclick = () => { $('notice').hidden = true; };
-api.onShortcut(run(async id => { if (id === 'stop') return stopAll(); if (document.activeElement === $('edit-shortcut')) return; const sound = state.sounds.find(s => s.id === id); if (sound) await mixer.play(sound, outputId()); }));
+api.onShortcut(run(async id => { if (id === 'stop') return stopAll(); if (document.activeElement === $('edit-shortcut') || shortcutEditing) return; const sound = state.sounds.find(s => s.id === id); if (sound) await mixer.play(sound, outputId()); }));
 api.onEngine(event => { if (mixer.starting && event.voice === state.voice) $('voice-status').textContent = event.state === 'loading' ? `${event.message} A primeira abertura pode levar alguns minutos.` : event.message; if (event.state === 'offline') { preparedVoice = ''; if (state.voice !== 'normal' && mixer.active) { mixer.stopMic(); notice('O motor de voz encerrou. Ative o microfone para tentar novamente.'); } else if (!mixer.starting && !warmingVoice) $('voice-status').textContent = idleVoiceStatus(); } });
 navigator.mediaDevices.addEventListener('devicechange', run(refreshDevices));
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && document.activeElement !== $('edit-shortcut')) stopAll(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && document.activeElement !== $('edit-shortcut') && !$('settings-dialog').open) stopAll(); });
 window.addEventListener('beforeunload', () => { clearInterval(meterTimer); mixer.stopAll(); });
 async function init() {
   state = await api.state(); voices = state.voices; renderVoices(); mixer.setVolumes(state);
+  await mixer.setSoundSend(state.soundSendEnabled);
   renderUpdate(await api.updateState());
   renderStartup(await api.startupState());
   if (!currentVoice()?.available) { state.voice = 'normal'; notice('A voz salva não está disponível. Sua voz natural foi selecionada.'); }
@@ -284,6 +340,7 @@ async function init() {
   await selectVoice(state.voice); renderCategories(); renderSounds(); checkShortcuts(); await refreshDevices();
   await renderResources(await api.resourcesState());
   if (state.recovered) notice('A biblioteca tinha um erro. Uma cópia foi preservada em data para recuperação.');
+  void autoCheckUpdates();
   meterTimer = setInterval(() => { const level = Math.round(mixer.level() * 100); $('meter-fill').style.transform = `scaleX(${level / 100})`; $('meter-fill').parentElement.setAttribute('aria-valuenow', String(level)); }, 80);
 }
 init().catch(fail);

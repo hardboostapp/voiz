@@ -17,6 +17,24 @@ test('sound return defaults on, preserves selected headphones, and rejects nonbo
   library.settings({voiceMonitorEnabled:true}); assert.equal(new Library(path.join(root,'data')).state.voiceMonitorEnabled,true);
 });
 
+test('Windows monitor choice survives restart and legacy selected headphones remain selected', t => {
+  const {root,library}=fixture(t);
+  assert.equal(library.state.monitorMode,'windows');
+  library.settings({monitorMode:'device',monitorName:'Fones USB'});
+  const legacy={...library.state};delete legacy.monitorMode;fs.writeFileSync(library.file,JSON.stringify(legacy));
+  const migrated=new Library(path.join(root,'data'));assert.equal(migrated.state.monitorMode,'device');assert.equal(migrated.state.monitorName,'Fones USB');
+  migrated.settings({monitorMode:'windows',monitorName:''});
+  const reopened=new Library(path.join(root,'data'));assert.equal(reopened.state.monitorMode,'windows');assert.equal(reopened.state.monitorName,'');
+  reopened.settings({monitorMode:'invalid'});assert.equal(reopened.state.monitorMode,'windows');
+  reopened.settings({monitorName:'Fone manual'});assert.equal(reopened.state.monitorMode,'device');
+});
+test('private sound preview persists independently of local return and rejects invalid switches',t=>{
+  const {root,library}=fixture(t);assert.equal(library.state.soundSendEnabled,true);
+  library.settings({soundSendEnabled:false,monitorEnabled:true});library.settings({soundSendEnabled:'true'});
+  const reopened=new Library(path.join(root,'data'));assert.equal(reopened.state.soundSendEnabled,false);assert.equal(reopened.state.monitorEnabled,true);
+  reopened.settings({soundSendEnabled:true,monitorEnabled:false});const saved=new Library(path.join(root,'data'));assert.equal(saved.state.soundSendEnabled,true);assert.equal(saved.state.monitorEnabled,false);
+});
+
 test('voice tuning persists separately per person and cannot exceed valid ranges', t => {
   const { root, library } = fixture(t);
   library.settings({ voiceTuning: { lula: { pitchShift: -3, inputGain: 1.4 }, bolsonaro: { pitchShift: 999, indexRatio: 8, inputGain: -20 } } });

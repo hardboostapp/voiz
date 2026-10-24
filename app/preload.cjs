@@ -15,5 +15,5 @@ contextBridge.exposeInMainWorld('voiz', {
   driver: () => ipcRenderer.invoke('driver'), logs: () => ipcRenderer.invoke('logs'),
   cableSite: () => ipcRenderer.invoke('cable-site'),
   updateState: () => ipcRenderer.invoke('update-state'), checkUpdate: () => ipcRenderer.invoke('update-check'), downloadUpdate: () => ipcRenderer.invoke('update-download'), installUpdate: () => ipcRenderer.invoke('update-install'), updateRepository: () => ipcRenderer.invoke('update-repository'),
-  onShortcut: listen('shortcut'), onEngine: listen('engine-status'), onUpdate: listen('update-status')
+  onShortcut: listen('shortcut'), onEngine: listen('engine-status'), onUpdate: listen('update-status'), onCheckUpdates: listen('check-updates')
 });

@@ -16,6 +16,8 @@ Essa troca substitui apenas `app`, preservando dados, perfis e projetos vizinhos
 
 A versão 0.4.6 leva um iniciador Windows pequeno no manifesto `app/launcher.json`, com tamanho e SHA-256. Na próxima abertura, `launcher.cjs` materializa `Voiz.exe` na raiz da instalação e salva apenas o caminho local do runtime em `settings/launcher-runtime.txt`. O código-fonte do iniciador está em `setup/VoizLauncher.cs`; `node scripts/build-launcher.cjs` regenera o manifesto com o compilador .NET Framework do Windows e o ícone do aplicativo. O iniciador possui os metadados Voiz/hardboostapp, encaminha os argumentos para o Electron existente e não abre console. A migração altera somente a entrada de inicialização Voiz, preservando inclusive a desativação feita no Windows; não ativa a opção para quem nunca a registrou. O protocolo de atualização continua aceitando somente as extensões existentes, sem adicionar executáveis arbitrários ao pacote.
 
+A versão 0.4.7 acrescenta `monitorMode`: `windows` acompanha a saída padrão do Windows; `device` mantém o fone salvo em `monitorName`. Bibliotecas anteriores com um fone salvo migram para `device`, sem substituir a seleção. O retorno usa o sink padrão nativo e resolve o alias `default` para evitar duplicação quando a saída principal já é o mesmo dispositivo. Mudanças no padrão atualizam somente o retorno, preservando o envio à chamada. Cabos virtuais continuam fora do retorno local. Os atalhos existentes cujo destino e argumentos pertencem a esta instalação são atualizados para `Voiz.exe` com `hardboostapp.voiz`; links ausentes ou pertencentes a outro app não são recriados nem alterados. A janela também declara nome, ícone e comando de reabertura próprios para o Windows. Blocos antigos fixados no Iniciar podem precisar ser desafixados e fixados novamente pelo usuário.
+
 ## Motor e vozes fornecidos
 
 O catálogo fixa URLs públicas de assets em `hardboostapp/voiz`, tamanhos e SHA-256 do ZIP e de cada arquivo. O instalador baixa cerca de 2,2 GB na primeira execução. Os pacotes contêm o motor, módulos, modelos ONNX prontos e índices de Lula, Bolsonaro, Mano Brown e Feminina, com suas atribuições. O pacote base original VB-CABLE acompanha o Setup. Uma nova voz fornecida deve ser incluída no catálogo e no manifesto da próxima versão do aplicativo; assim chega às outras instalações depois da atualização, sem importação manual.
@@ -27,6 +29,8 @@ O progresso mostra o pacote e os MB recebidos. Falha oferece nova tentativa. Dow
 Para recuperação manual, feche o Voiz, preserve a pasta `app` atual com outro nome e copie `previous-app` indicada no relatório para `app`. As cópias de recuperação não são apagadas automaticamente.
 
 ## Publicação
+
+A consulta automática ocorre ao iniciar e nos eventos de foco, restauração e maximização, com intervalo mínimo de cinco minutos e bloqueio de concorrência. Uma atualização baixada e pronta para instalar é preservada. A consulta não baixa, instala, reinicia ou abre o microfone automaticamente. O resultado aparece na engrenagem de Configurações e na seção Atualizações. Os controles manuais continuam disponíveis nessa seção.
 
 1. Aumentar a versão em `app/package.json`.
 2. Executar os testes e revisar somente os arquivos permitidos por `.gitignore`.

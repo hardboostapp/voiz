@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { VOICES } = require('./voices.cjs');
 const { normalizeTuning } = require('./audio-profile.cjs');
 const AUDIO = new Set(['.wav', '.mp3', '.ogg', '.m4a', '.aac', '.flac', '.opus', '.webm']);
-const DEFAULTS = { sounds: [], inputName: '', outputName: '', monitorEnabled: true, voiceMonitorEnabled: false, monitorName: '', voice: 'normal', micVolume: 1, soundVolume: 0.8, masterVolume: 0.8, stopShortcut: 'CommandOrControl+Shift+Space' };
+const DEFAULTS = { sounds: [], inputName: '', outputName: '', soundSendEnabled: true, monitorEnabled: true, voiceMonitorEnabled: false, monitorMode: 'windows', monitorName: '', voice: 'normal', micVolume: 1, soundVolume: 0.8, masterVolume: 0.8, stopShortcut: 'CommandOrControl+Shift+Space' };
 const clamp = (value, fallback = 1) => Number.isFinite(Number(value)) ? Math.max(0, Math.min(1, Number(value))) : fallback;
 function shortcut(value) {
   const text = String(value || '').trim();
@@ -18,11 +18,16 @@ class Library {
     fs.mkdirSync(path.join(root, 'sounds'), { recursive: true });
     this.state = structuredClone(DEFAULTS);
     if (fs.existsSync(this.file)) {
-      try { this.state = { ...this.state, ...JSON.parse(fs.readFileSync(this.file, 'utf8')) }; }
+      try {
+        const saved = JSON.parse(fs.readFileSync(this.file, 'utf8'));
+        this.state = { ...this.state, ...saved, monitorMode: saved.monitorMode ?? (saved.monitorName ? 'device' : 'windows') };
+      }
       catch { fs.copyFileSync(this.file, `${this.file}.recovery-${Date.now()}`); this.recovered = true; }
     }
     if (!Array.isArray(this.state.sounds)) this.state.sounds = [];
+    if (!['windows', 'device'].includes(this.state.monitorMode)) this.state.monitorMode = this.state.monitorName ? 'device' : 'windows';
     this.state.monitorEnabled = typeof this.state.monitorEnabled === 'boolean' ? this.state.monitorEnabled : true;
+    this.state.soundSendEnabled = typeof this.state.soundSendEnabled === 'boolean' ? this.state.soundSendEnabled : true;
     this.state.voiceMonitorEnabled = this.state.voiceMonitorEnabled === true;
     this.state.monitorName = String(this.state.monitorName || '').slice(0, 300);
     if (!VOICES.some(v => v.id === this.state.voice)) this.state.voice = 'normal';
@@ -71,7 +76,10 @@ class Library {
   remove(id) { const file = this.audioPath(id); this.state.sounds = this.state.sounds.filter(s => s.id !== id); this.save(); if (fs.existsSync(file)) fs.unlinkSync(file); return this.snapshot(); }
   settings(input) {
     for (const key of ['inputName', 'outputName', 'monitorName']) if (key in input) this.state[key] = String(input[key]).slice(0, 300);
+    if (['windows', 'device'].includes(input.monitorMode)) this.state.monitorMode = input.monitorMode;
+    else if ('monitorName' in input && !('monitorMode' in input)) this.state.monitorMode = 'device';
     if (typeof input.monitorEnabled === 'boolean') this.state.monitorEnabled = input.monitorEnabled;
+    if (typeof input.soundSendEnabled === 'boolean') this.state.soundSendEnabled = input.soundSendEnabled;
     if (typeof input.voiceMonitorEnabled === 'boolean') this.state.voiceMonitorEnabled = input.voiceMonitorEnabled;
     for (const key of ['micVolume', 'soundVolume', 'masterVolume']) if (key in input) this.state[key] = clamp(input[key]);
     if (VOICES.some(v => v.id === input.voice)) this.state.voice = input.voice;

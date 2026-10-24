@@ -9,7 +9,7 @@ const { Resources } = require('./resources.cjs');
 const { voiceCatalog } = require('./voices.cjs');
 const { Updater, REPOSITORY } = require('./updater.cjs');
 const { createStartup } = require('./startup.cjs');
-const { prepareLauncher } = require('./launcher.cjs');
+const { prepareLauncher, repairShortcuts } = require('./launcher.cjs');
 const { createTray, closeToTray } = require('./tray.cjs');
 const { driverExecutable } = require('./installation.cjs');
 const { version } = require('./package.json');
@@ -62,6 +62,7 @@ else {
         const launcher = prepareLauncher(root, process.execPath);
         startup = createStartup(app, process.execPath, __dirname, false, launcher);
         startup.migrate();
+        repairShortcuts({ shell, root, runtime: process.execPath, desktop: app.getPath('desktop'), appData: app.getPath('appData') });
       } catch (error) {
         fs.mkdirSync(path.join(root, 'logs'), { recursive: true });
         fs.appendFileSync(path.join(root, 'logs/launcher.log'), `${new Date().toISOString()} ${error.message}\n`);
@@ -120,7 +121,9 @@ else {
     });
     registerShortcuts();
     window = new BrowserWindow({ width: 1180, height: 800, minWidth: 860, minHeight: 660, backgroundColor: '#111315', title: 'Voiz', icon: path.join(__dirname, 'icon.ico'), autoHideMenuBar: true, show: false, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, backgroundThrottling: false } });
+    if (!testRoot && process.platform === 'win32') window.setAppDetails({ appId: 'hardboostapp.voiz', appIconPath: path.join(__dirname, 'icon.ico'), appIconIndex: 0, relaunchCommand: `"${path.join(root, 'Voiz.exe')}"`, relaunchDisplayName: 'Voiz' });
     window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    for (const event of ['focus','restore','maximize']) window.on(event, () => send('check-updates'));
     window.webContents.on('will-navigate', (event, url) => { if (!isAppPage(url)) event.preventDefault(); });
     window.webContents.on('render-process-gone', () => engine.stop());
     if (!testRoot && !process.env.VOIZ_TEST_HIDE) tray = createTray({ Tray, Menu }, path.join(__dirname, 'icon.ico'), { show: showWindow, stop: () => send('shortcut', 'stop'), quit: () => app.quit() });

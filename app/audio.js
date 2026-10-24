@@ -1,8 +1,10 @@
 import { ConversionQueue } from './conversion-queue.mjs';
+import { WINDOWS_MONITOR } from './monitor-output.mjs';
 export class AudioMixer {
   constructor(api, changed) {
     this.api = api; this.changed = changed; this.ctx = null; this.stream = null; this.sources = new Map(); this.pendingSounds = new Set(); this.cache = new Map(); this.generation = 0; this.playGeneration = 0; this.inflight = false; this.starting = false; this.active = false;
     this.volumes = { micVolume: 1, soundVolume: .8, masterVolume: .8 };
+    this.soundSendEnabled = true;
     this.monitorSources = new Map(); this.monitorEnabled = false; this.voiceMonitorEnabled = false; this.monitorOutputId = ''; this.monitorGeneration = 0; this.monitorError = '';
   }
   async open(outputId) {
@@ -27,11 +29,18 @@ export class AudioMixer {
     await context.resume();
     this.ctx.addEventListener('sinkchange', () => { if (this.ctx && this.ctx.sinkId !== this.outputId) { this.stopAll(); this.changed({ error: 'A saída mudou. Selecione o dispositivo novamente.' }); } });
   }
-  setVolumes(values) { Object.assign(this.volumes, values); if (this.ctx) { this.voiceGain.gain.value = this.volumes.micVolume; this.soundGain.gain.value = this.volumes.soundVolume; this.master.gain.value = this.volumes.masterVolume; } if (this.monitorBus) this.monitorBus.gain.value = this.volumes.soundVolume; if (this.monitorMaster) this.monitorMaster.gain.value = this.volumes.masterVolume; }
-  async setMonitor({ enabled, voiceEnabled = this.voiceMonitorEnabled, outputId = '' }) {
+  setVolumes(values) { Object.assign(this.volumes, values); if (this.ctx) { this.voiceGain.gain.value = this.volumes.micVolume; this.soundGain.gain.value = this.soundSendEnabled ? this.volumes.soundVolume : 0; this.master.gain.value = this.volumes.masterVolume; } if (this.monitorBus) this.monitorBus.gain.value = this.volumes.soundVolume; if (this.monitorMaster) this.monitorMaster.gain.value = this.volumes.masterVolume; }
+  async setSoundSend(enabled) {
+    const next = !!enabled;
+    if (next === this.soundSendEnabled) return;
+    this.soundSendEnabled = next; this.setVolumes({});
+    await this.setMonitor({enabled:this.monitorEnabled,voiceEnabled:this.voiceMonitorEnabled,outputId:this.monitorOutputId,resolvedOutputId:this.monitorResolvedOutputId || '',force:true});
+  }
+  sameMonitorOutput() { return this.monitorOutputId === this.outputId || (!!this.monitorResolvedOutputId && this.monitorResolvedOutputId === this.outputId); }
+  async setMonitor({ enabled, voiceEnabled = this.voiceMonitorEnabled, outputId = '', resolvedOutputId = '', force = false }) {
     const nextId = String(outputId);
-    if (this.monitorEnabled === !!enabled && this.voiceMonitorEnabled === !!voiceEnabled && this.monitorOutputId === nextId) return;
-    this.monitorEnabled = !!enabled; this.voiceMonitorEnabled = !!voiceEnabled; this.monitorOutputId = nextId; this.monitorError = '';
+    if (!force && this.monitorEnabled === !!enabled && this.voiceMonitorEnabled === !!voiceEnabled && this.monitorOutputId === nextId && this.monitorResolvedOutputId === resolvedOutputId) return;
+    this.monitorEnabled = !!enabled; this.voiceMonitorEnabled = !!voiceEnabled; this.monitorOutputId = nextId; this.monitorResolvedOutputId = resolvedOutputId; this.monitorError = '';
     await this.closeMonitor();
     if (this.sources.size || this.active) {
       await this.ensureMonitor();
@@ -48,7 +57,7 @@ export class AudioMixer {
   }
   connectVoiceMonitor() {
     this.disconnectVoiceMonitor();
-    if (!this.active || !this.voiceMonitorEnabled || !this.monitorMaster || this.monitorOutputId === this.outputId) return;
+    if (!this.active || !this.voiceMonitorEnabled || !this.monitorMaster || this.sameMonitorOutput()) return;
     // This tap is after conversion and mic gain, never from the dry input stream.
     this.voiceMonitorDestination = this.ctx.createMediaStreamDestination();
     this.voiceGain.connect(this.voiceMonitorDestination);
@@ -63,11 +72,12 @@ export class AudioMixer {
     if (context && context.state !== 'closed') await context.close();
   }
   async ensureMonitor() {
-    if ((!this.monitorEnabled && !this.voiceMonitorEnabled) || !this.monitorOutputId || this.monitorOutputId === this.outputId) return;
+    if ((!this.monitorEnabled && !this.voiceMonitorEnabled) || !this.monitorOutputId || (this.sameMonitorOutput() && (this.soundSendEnabled || !this.monitorEnabled))) return;
     if (this.monitorContext?.state === 'running') return;
     if (this.monitorContext?.state === 'suspended') { try { await this.monitorContext.resume(); return; } catch { await this.closeMonitor(); } }
     if (this.monitorOpening) return this.monitorOpening;
-    const token = this.monitorGeneration, target = this.monitorOutputId;
+    // An empty native sink follows the Windows default instead of pinning one device.
+    const token = this.monitorGeneration, target = this.monitorOutputId === WINDOWS_MONITOR ? '' : this.monitorOutputId;
     const work = (async () => {
       let context;
       try {
@@ -102,7 +112,7 @@ export class AudioMixer {
     this.monitorSources.delete(id); try { source.stop(); } catch {}
   }
   monitorSound(id, buffer, volume, offset = 0) {
-    if (!this.monitorBus || !this.monitorEnabled || this.monitorOutputId === this.outputId || this.monitorSources.has(id) || offset >= buffer.duration) return;
+    if (!this.monitorBus || !this.monitorEnabled || (this.sameMonitorOutput() && this.soundSendEnabled) || this.monitorSources.has(id) || offset >= buffer.duration) return;
     const source = this.monitorContext.createBufferSource(), gain = this.monitorContext.createGain();
     source.buffer = buffer; gain.gain.value = volume; source.connect(gain); gain.connect(this.monitorBus);
     source.onended = () => { if (this.monitorSources.get(id) === source) this.monitorSources.delete(id); source.disconnect(); gain.disconnect(); };

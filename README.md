@@ -14,7 +14,7 @@ O mesmo instalador inclui e inicia a instalação do cabo virtual **VB-CABLE**, 
 
 ## Atualizações
 
-Na instalação existente, clique em **Atualizações → Buscar atualização**. Quando houver uma versão nova, baixe o pacote e clique em **Reiniciar e atualizar**. O aplicativo consulta exclusivamente as versões estáveis deste repositório, verifica SHA-256 e conserva uma cópia do aplicativo anterior.
+O Voiz busca atualizações ao abrir e quando você volta à janela ou a maximiza, respeitando um intervalo de cinco minutos entre consultas. Uma marca na engrenagem indica quando há uma versão nova. Abra **Configurações → Atualizações**, baixe o pacote e clique em **Reiniciar e atualizar**. A busca manual também fica nessa seção. O aplicativo consulta exclusivamente as versões estáveis deste repositório, verifica SHA-256 e conserva uma cópia do aplicativo anterior.
 
 Após atualizar o aplicativo, o catálogo instala automaticamente as vozes fornecidas que estiverem novas ou faltando. Sons, atalhos, ajustes por voz, modelos adicionados pelo usuário e dados pessoais são preservados. As versões anteriores dos arquivos gerenciados substituídos ficam em `updates/resources-previous`. O código público não contém dados da instalação pessoal; os pesos fornecidos são assets separados de Releases.
 
@@ -26,9 +26,19 @@ No Voiz, selecione **CABLE Input** como saída. No Discord ou outro aplicativo, 
 
 No Soundboard, mantenha **Ouvir meus sons** ligado e escolha o fone em **Ouvir em**. Os sons disparados por clique ou atalho também são reproduzidos nesse dispositivo. Para escutar também a voz escolhida, marque **Ouvir minha voz**, abaixo do botão do microfone, e ative o microfone. Os dois retornos podem ser ligados separadamente. Usar o mesmo dispositivo nas duas saídas não duplica a reprodução.
 
+Em **Ouvir em → Padrão do Windows**, o retorno acompanha a saída de áudio padrão do sistema, inclusive ao trocar de fone. A escolha fica salva. Instalações novas usam essa opção; quem já escolheu um fone manualmente mantém sua seleção. Se o padrão do Windows for um cabo virtual, escolha um fone físico no Windows ou no Voiz para ouvir o retorno.
+
+Para experimentar um efeito em particular, desligue **Enviar sons para a call** e mantenha **Ouvir meus sons** ligado. Cliques e atalhos passam a tocar somente no seu fone. Sua voz continua sendo enviada normalmente. Ligue novamente **Enviar sons para a call** quando quiser compartilhar os efeitos. As duas preferências ficam salvas.
+
+Cada quadradinho de som tem um botão de teclado para **Adicionar ou alterar atalho**. Clique e pressione a combinação: ela é salva imediatamente, sem abrir o formulário de edição. Use **Cancelar** ou Escape para sair e **Remover atalho** para limpar. Combinações em uso por outro som são recusadas.
+
 Em **Windows e bandeja**, marque **Iniciar com o Windows** para abrir o Voiz na bandeja ao entrar na sua conta. O microfone começa desligado. O botão **X** recolhe a janela e mantém o áudio e os atalhos funcionando. Para encerrar, clique com o botão direito no ícone da bandeja e escolha **Sair do Voiz**; esse menu também oferece **Parar tudo**.
 
+A engrenagem no canto superior direito reúne **Atualizações**, **Windows e bandeja**, **Usar no Discord**, atribuições e logs. Esses itens ficam fora do painel principal de voz e sons.
+
 Desde a versão 0.4.6, a inicialização usa **Voiz.exe**, um iniciador de 12 KB com nome e ícone próprios, em vez de mostrar a identidade genérica do Electron no Windows. Entradas antigas são migradas mantendo a preferência de iniciar ou permanecer desativado. O runtime existente é reaproveitado. Se a lista de inicialização estiver aberta durante a migração, feche e reabra essa página para atualizá-la.
+
+A versão 0.4.7 também atualiza os atalhos existentes do Voiz para esse iniciador, com ícone e identidade próprios no Windows. Se um bloco antigo do menu Iniciar ainda mostrar Electron, desafixe esse bloco e fixe novamente o **Voiz** encontrado na pesquisa após abrir a versão atualizada.
 
 A reprodução da voz de IA começa com reserva de 100 ms e aumenta até 200 ms se faltar áudio convertido. Isso reduz a espera inicial em 100 ms em relação à versão 0.4.1; a latência total também inclui captura, conversão, dispositivos e aplicativo da chamada.
 
